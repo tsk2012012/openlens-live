@@ -1,0 +1,12 @@
+{
+  "name": "openlens-news-review",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Source-transparent news comparison dashboard",
+  "scripts": {
+    "dev": "node dev-server.mjs",
+    "start": "node dev-server.mjs"
+  },
+  "engines": { "node": ">=20" }
+}
