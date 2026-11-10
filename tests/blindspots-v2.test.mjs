@@ -42,6 +42,6 @@ test('blindspots navigation shows source research instead of repeated insufficie
  const ui=await readFile(new URL('../newsroom-visuals.js',import.meta.url),'utf8');
  for(const name of ['Blinde vlekken & brononderzoek','Uitgevers & profielen','Steekproefkwaliteit','Kandidaat-perspectiefgaten'])assert.ok(ui.includes(name));
  assert.match(ui,/data-ol-spot-filter/);
- assert.match(ui,/auditReport\\(\\)/);
+ assert.match(ui,/auditReport\(\)/);
  assert.doesNotMatch(ui,/>Onvoldoende bronclassificaties</);
 });

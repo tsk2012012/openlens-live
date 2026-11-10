@@ -23,7 +23,8 @@ test('cards and blindspots use same evidence-aware publisher metrics',async()=>{
  const ui=await read('newsroom-visuals.js'),home=await read('editorial-home.js');
  assert.match(ui,/OpenLensCoverage/);
  assert.match(ui,/metrics\.summarize/);
- assert.match(ui,/metrics\.assessBlindspot/);
+ const core=await read('blindspots-core.js');
+ assert.match(core,/metrics\\.assessBlindspot/);
  assert.match(ui,/politiek beoordeeld/);
  assert.match(ui,/geen van deze signalen bewijst/i);
  assert.match(ui,/data-view="blindspots"/);
