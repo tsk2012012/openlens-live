@@ -2,6 +2,7 @@
  * Google uses an undocumented RPC; failures degrade to a Google News link.
  * Not a crawler: resolves only user-selected articles, not the whole feed.
  */
+import { isIP } from 'node:net';
 const ARTICLE_PATH=/^\/(?:rss\/)?(?:articles|read)\/([A-Za-z0-9_-]{20,600})\/?$/;
 const RPC='https://news.google.com/_/DotsSplashUi/data/batchexecute?rpcids=Fbv4je';
 const UA='Mozilla/5.0 (compatible; OpenLens/1.0; article-attribution)';
@@ -35,7 +36,7 @@ export function parseGoogleRpc(text){
 function publisherUrl(input){
  try{
   const u=new URL(input);
-  if(u.protocol!=='https:'||!u.hostname.includes('.')||u.username||u.password||u.port&&u.port!=='443')return null;
+  if(u.protocol!=='https:'||!u.hostname.includes('.')||u.username||u.password||u.port&&u.port!=='443'||isIP(u.hostname)||/(^|\.)(localhost|internal|local|test|invalid)$/i.test(u.hostname))return null;
   if(/(^|\.)google\.com$/i.test(u.hostname))return null;
   return u.href;
  }catch{return null}

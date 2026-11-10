@@ -62,3 +62,12 @@ test('does not follow consent or external Google redirects',async()=>{
  const fake=async()=>new Response('',{status:302,headers:{Location:'https://consent.google.com/consent'}});
  await assert.rejects(resolveGoogleNewsUrl(input,{fetchImpl:fake}),/consent page/);
 });
+
+test('Google resolver refuses private IP publisher destinations',async()=>{
+ const malicious=async(url,opts)=>{
+  if(opts.method==='GET')return new Response(fixtureHtml);
+  const payload=JSON.stringify([['wrb.fr','Fbv4je',JSON.stringify(['garturlres','https://127.0.0.1/private',1])]]);
+  return new Response(String.fromCharCode(41,93,125,39,10)+payload);
+ };
+ await assert.rejects(resolveGoogleNewsUrl(input,{fetchImpl:malicious}),/no publisher HTTPS URL/);
+});
