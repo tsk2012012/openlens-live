@@ -4,7 +4,7 @@
 if(typeof render!=='function'||typeof state==='undefined')return;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ui={query:'',filter:'all',expanded:false};
-const safeLink=raw=>{try{const u=new URL(raw);return u.protocol==='https:'&&/(^|\.)allsides\.com$/i.test(u.hostname)?u.href:null}catch{return null}};
+const safeLink=raw=>{try{const u=new URL(raw);return u.protocol==='https:'&&/(^|\.)(allsides\.com|eurotopics\.net)$/i.test(u.hostname)?u.href:null}catch{return null}};
 function publishers(){
  const names=new Map();
  for(const a of state.allArticles||[]){
@@ -17,8 +17,8 @@ function publishers(){
   const institutional=meta?.politicallyAssessable===false;
   const rating=institutional?null:external?.rating&&!['Unrated','Other source'].includes(external.rating)?external.rating:meta?.rating||null;
   const kind=institutional?'institution':rating?'rated':'unrated';
-  return {name,kind,type:meta?.type||'Identity not reviewed',rating,
-    link:safeLink(external?.source||meta?.source),
+  return {name,kind,type:meta?.type||'Identity not reviewed',rating,orientation:window.OpenLensPublisherOrientationLookup?.(name)?.orientation||null,
+    provider:external?.provider||null,link:safeLink(external?.source||meta?.source||window.OpenLensPublisherOrientationLookup?.(name)?.source),
     note:meta?.typeExplanation||'Publisher identity has not been fully reviewed.'};
  });
 }
@@ -28,7 +28,7 @@ function markup(){
  const status=m=>m.kind==='institution'?'Institutional / non-news source':m.rating||'No independent political rating';
  const rows=list.map(m=>
   '<article class="ol-dir-row" data-ol-dir-kind="'+m.kind+'" data-ol-dir-name="'+esc((m.name+' '+m.type).toLowerCase())+'">'+
-  '<div class="ol-dir-name"><strong>'+esc(m.name)+'</strong><span>'+esc(m.type)+'</span></div>'+
+  '<div class="ol-dir-name"><strong>'+esc(m.name)+'</strong><span>'+esc(m.type)+(m.orientation?' · Eurotopics: '+esc(m.orientation):'')+'</span></div>'+
   '<div class="ol-dir-meta"><span class="ol-dir-badge '+m.kind+'">'+esc(status(m))+'</span>'+
   (m.link?'<a href="'+esc(m.link)+'" target="_blank" rel="noopener noreferrer">Rating source ↗</a>':'<small>—</small>')+
   '</div></article>').join('');
@@ -38,7 +38,7 @@ function markup(){
  '<button type="button" data-view="dashboard" class="ol-dir-button">Explore stories ↗</button></header>'+
  '<div class="ol-dir-stats">'+
  [['Sources in this feed',list.length],['With published ratings',rated],['Without a political rating',unrated],['Institutional / other',orgs]].map(([k,v])=>'<div><strong>'+v+'</strong><span>'+k+'</span></div>').join('')+
- '</div><div class="ol-dir-explain"><strong>What these labels mean:</strong> Newsroom political ratings come from cited external assessments, not OpenLens guesses. Government bodies, research groups and other institutions are grouped by source type. Unrated does not mean Center. This directory represents the current feed, not the entire news ecosystem.</div>'+
+ '</div><div class="ol-dir-explain"><strong>What these labels mean:</strong> Newsroom political ratings come from cited external assessments, not OpenLens guesses. Government bodies, research groups and other institutions are grouped by source type. Unrated does not mean Center. A Eurotopics editorial-orientation profile (e.g. Liberal or Christian) need not map to Left–Right. AllSides and Eurotopics use different methodologies. This directory represents the current feed, not the entire news ecosystem.</div>'+
  '<section class="ol-dir-panel"><div class="ol-dir-toolbar"><div><h2>Browse sources</h2><p>Search a publisher or explore its source category.</p></div>'+
  '<label>Search publishers<input id="ol-dir-search" placeholder="Search by name or source type" value="'+esc(ui.query)+'" autocomplete="off"></label></div>'+
  '<div class="ol-dir-filters" role="group" aria-label="Publisher rating filters">'+
