@@ -124,5 +124,5 @@ document.addEventListener('click',e=>{
 document.addEventListener('keydown',e=>{
  if(e.key==='Escape'&&openStoryId&&state.view==='dashboard'&&!document.querySelector('dialog[open]'))closeStory();
 });
-afterRender();
+render();
 })();

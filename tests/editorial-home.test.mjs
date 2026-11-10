@@ -45,3 +45,5 @@ test('existing bookmarks and publisher data are preserved',async()=>{
  const html=await readFile(new URL('../index.html',import.meta.url),'utf8');
  assert.match(html,/editorial-home\.js\?v=/);
 });
+
+test('editorial home activates immediately after scripts load',()=>{assert.match(src,/render\(\);\n\}\)\(\);\s*$/);});
