@@ -42,14 +42,25 @@ const css=`
 .ol-quick-panel .ol-empty{margin:2px 0;color:#7a88a2}
 @media(max-width:600px){.ol-quick-actions{display:grid;grid-template-columns:1fr}.ol-quick-actions .ol-preview-trigger{justify-content:center;min-height:39px}.ol-card-preview{min-height:34px}}
 `;
-const style=document.createElement('style');style.textContent=css;document.head.append(style);
+const style=document.createElement('style');style.textContent=css+"\n.ol-p-manual-toggle{font-size:11px;color:#0d7767;background:none;border:0;padding:9px 0;cursor:pointer;text-decoration:underline}\n.ol-p-manual-form{display:flex;flex-direction:column;gap:8px;padding:12px;background:#f2f8f2;border-radius:10px;border:1px solid #d8e8d9;margin-top:13px}\n.ol-p-manual-form label{font-size:12px;font-weight:700;color:#315748}\n.ol-p-manual-form input{font-size:13px;padding:10px 11px;border-radius:8px;border:1px solid #cdded1;background:#fff;color:#25473d;width:100%;box-sizing:border-box}\n.ol-p-manual-form button{border:0;background:#0c7769;color:#fff;padding:9px 12px;border-radius:8px;font-size:12px;font-weight:740;cursor:pointer;align-self:flex-start}\n.ol-p-manual-form p{font-size:11px;color:#6a8073;margin:0;line-height:1.5}\n";document.head.append(style);
 const dlg=document.createElement('dialog');dlg.className='ol-preview-dialog';dlg.setAttribute('aria-label','Article preview');
-dlg.innerHTML=`<div class="ol-p-head"><div><div class="ol-p-label">Source article preview</div><h2 id="ol-p-title">Article title</h2><div class="ol-p-meta" id="ol-p-meta"></div></div><button type="button" class="ol-p-close" aria-label="Close article preview" title="Close">×</button></div><div class="ol-p-content"><div id="ol-p-result" hidden><div class="ol-p-kind" id="ol-p-kind"></div><p class="ol-p-synopsis" id="ol-p-synopsis"></p><div class="ol-p-highlights" id="ol-p-highlights" hidden></div><div class="ol-p-note" id="ol-p-note"></div></div><div class="ol-p-actions"><a id="ol-p-open" class="ol-p-link" target="_blank" rel="noopener noreferrer">Open original article ↗</a><button type="button" class="ol-p-secondary" id="ol-p-done">Close</button></div></div>`;
+dlg.innerHTML=`<div class="ol-p-head"><div><div class="ol-p-label">Source article preview</div><h2 id="ol-p-title">Article title</h2><div class="ol-p-meta" id="ol-p-meta"></div></div><button type="button" class="ol-p-close" aria-label="Close article preview" title="Close">×</button></div><div class="ol-p-content"><div id="ol-p-result" hidden><div class="ol-p-kind" id="ol-p-kind"></div><p class="ol-p-synopsis" id="ol-p-synopsis"></p><div class="ol-p-highlights" id="ol-p-highlights" hidden></div><div class="ol-p-note" id="ol-p-note"></div></div><div class="ol-p-actions"><a id="ol-p-open" class="ol-p-link" target="_blank" rel="noopener noreferrer">Open original article ↗</a><button type="button" class="ol-p-secondary" id="ol-p-done">Close</button></div><button id="ol-p-manual-toggle" type="button" class="ol-p-manual-toggle">Have the original publisher link? Paste it</button><form class="ol-p-manual-form" id="ol-p-manual-form" hidden><label for="ol-p-manual-url">Original publisher article URL</label><input id="ol-p-manual-url" type="url" placeholder="https://publisher.example/article" required maxlength="1800"><button type="submit">Preview publisher article</button><p>Only the URL is sent to OpenLens for retrieving public article metadata. Avoid links containing private tokens.</p></form></div>`;
 document.body.append(dlg);
 const $=(id)=>dlg.querySelector('#'+id);
 const close=()=>{if(dlg.open)dlg.close()};
 dlg.querySelector('.ol-p-close').addEventListener('click',close);
 $('ol-p-done').addEventListener('click',close);
+$('ol-p-manual-toggle').addEventListener('click',()=>{
+ const form=$('ol-p-manual-form');form.hidden=!form.hidden;
+ if(!form.hidden)$('ol-p-manual-url').focus();
+});
+$('ol-p-manual-form').addEventListener('submit',e=>{
+ e.preventDefault();
+ const value=$('ol-p-manual-url').value.trim();
+ if(!/^https:\/\//i.test(value))return;
+ openPreview(value,$('ol-p-title').textContent,$('ol-p-meta').textContent,'');
+ $('ol-p-manual-form').hidden=true;
+});
 dlg.addEventListener('click',e=>{if(e.target===dlg)close()});
 let controller=null;let requestId=0;
 dlg.addEventListener('close',()=>{controller?.abort();requestId++});
@@ -81,6 +92,7 @@ async function openPreview(url,title,outlet,when){
   $('ol-p-meta').textContent=[outlet,when].filter(Boolean).join(' · ');
   $('ol-p-open').href=url;
   $('ol-p-open').textContent=fromGoogle?'Continue through Google News ↗':'Open publisher article ↗';
+  $('ol-p-manual-form').hidden=true;
   if(!dlg.open){try{dlg.showModal()}catch{dlg.setAttribute('open','')}}
   paintPreview(fromGoogle?'Finding the original publisher…':'Checking publisher description…',
     title||'Article title unavailable',
@@ -116,7 +128,7 @@ async function openPreview(url,title,outlet,when){
   if(previewCache.has(url)){applyData(previewCache.get(url));return}
   // Google decoding needs two small external requests, then optional publisher metadata.
   // The headline remains visible, and no loading spinner is shown.
-  const timeout=setTimeout(()=>controller.abort(),fromGoogle?12500:4500);
+  const timeout=setTimeout(()=>controller.abort(),fromGoogle?10500:4500);
   try{
     const response=await fetch('/api/article-preview?'+new URLSearchParams({url}),{
       signal:controller.signal,headers:{Accept:'application/json'}

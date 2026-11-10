@@ -161,7 +161,7 @@ export default async function handler(req,res){
    res.setHeader('Cache-Control','no-store');
    return res.end(JSON.stringify({...fallback(null,
       'The Google News link could not be resolved to the publisher right now. Continue through Google News to read the reporting.',null),
-      resolutionFailure:code}));
+      resolutionFailure:code,resolutionDetail:reason.slice(0,120)}));
   }
  }
  try{
