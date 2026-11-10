@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
+<title>OpenLens</title>
+<rect width="64" height="64" rx="16" fill="#17313D"/>
+<path d="M10.5 32C15.8 23.5 23.5 19 32 19c8.5 0 16.2 4.5 21.5 13C48.2 40.5 40.5 45 32 45c-8.5 0-16.2-4.5-21.5-13Z" stroke="#F0F8F5" stroke-width="3.2" stroke-linejoin="round"/>
+<circle cx="32" cy="32" r="10.5" fill="#77D7B6"/><circle cx="32" cy="32" r="5" fill="#17313D"/><circle cx="35" cy="28.7" r="2.4" fill="#F0F8F5"/>
+</svg>
