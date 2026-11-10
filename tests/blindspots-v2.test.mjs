@@ -45,3 +45,12 @@ test('blindspots navigation shows source research instead of repeated insufficie
  assert.match(ui,/auditReport\(\)/);
  assert.doesNotMatch(ui,/>Onvoldoende bronclassificaties</);
 });
+
+test('blindspots cards include coverage bars and trigger trusted publisher photo loading',async()=>{
+ const ui=await readFile(new URL('../newsroom-visuals.js',import.meta.url),'utf8');
+ assert.match(ui,/function enhanceBlindspotPhotos/);
+ assert.match(ui,/observeCover\(story,art\)/);
+ assert.match(ui,/blindspotView\(\);enhanceBlindspotPhotos\(\)/);
+ assert.match(ui,/\.ol-spot-item \.ol-card-cover/);
+ assert.match(ui,/bar\(m\)\)\+'<p><strong>Bronnen:/);
+});
