@@ -27,7 +27,7 @@ test('official check persists verified-domain records separately from news histo
   setTimeout,clearTimeout,
   fetch:async()=>{count++;return {ok:true,json:async()=>({events:records,sourceStatus:[{source:'Dutch activities',status:'ok',count:2}],checkedAt:'2026-11-10T13:00:00Z'})}}};
  runInNewContext(src,scope);
- const target={dataset:{olOfficialCheck:'watch-1'}};
+ const target={dataset:{olOfficialCheck:'watch-1'},hasAttribute:()=>false};
  handlers.click({target:{closest:()=>target}});
  await new Promise(r=>setTimeout(r,30));
  assert.equal(count,1);
