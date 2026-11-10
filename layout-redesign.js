@@ -21,12 +21,7 @@
   if(bc&&names[state.view])bc.textContent=names[state.view];
  }
 
- const topicShortcuts=[
-  ['all','All news'],['migration','Migration'],['dutch-politics','Dutch politics'],
-  ['gaza','Gaza'],['ukraine','Ukraine'],['geopolitics','Geopolitics'],
-  ['middle-east','Middle East'],['eu-policy','EU policy'],['world','World'],
-  ['politics','Politics'],['climate','Climate'],['technology','Technology']
- ];
+ const topicShortcuts=[["all","All news"],["netherlands","Netherlands"],["dutch-politics","Dutch politics"],["eu-policy","EU policy"],["eu-institutions","EU institutions"],["migration","Migration"],["housing","Housing"],["public-finances","Public finances"],["labor","Labour"],["local-government","Local government"],["digital-policy","Digital policy"],["healthcare-nl","Healthcare"],["climate-energy","Energy"],["agriculture","Agriculture"],["education","Education"],["security-defense","Defence"],["belgium-benelux","Benelux"],["ukraine","Ukraine"],["gaza","Gaza"],["geopolitics","Geopolitics"]];
  function topicRail(){
   const filter=document.querySelector('.filterbar');if(!filter)return;
   const region=document.createElement('section');region.className='ol-topic-rail';
@@ -43,9 +38,9 @@
    button.textContent=label;button.setAttribute('aria-pressed',String(key===state.topic));pills.append(button);
   }
   region.append(head,pills);
-  if(state.topic==='dutch-politics'&&state.country==='all'&&state.language==='all'){
+  if(['dutch-politics','netherlands','housing','public-finances','local-government','eu-policy','eu-institutions'].includes(state.topic)&&state.country==='all'&&state.language==='all'){
    const note=document.createElement('p');note.className='ol-topic-help';
-   note.textContent='Dutch politics uses the Netherlands / Dutch news edition by default. Change it in More filters.';
+   note.textContent='Dutch and EU public-affairs topics use the Netherlands / Dutch edition, with additional labelled source discovery. Change language or country in More filters.';
    region.append(note);
   }
   filter.before(region);

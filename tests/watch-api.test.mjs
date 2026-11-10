@@ -4,7 +4,7 @@ import {watchTerms,cleanWatchQuery,parseWatchRss} from '../api/watch.js';
 test('watch search requires distinctive keywords and removes uncontrolled operators',()=>{
  assert.equal(cleanWatchQuery('Gaza ceasefire update'),'gaza ceasefire update');
  assert.equal(cleanWatchQuery('de het een'),null);
- assert.equal(cleanWatchQuery('woningtekort AND site:example.com'),'woningtekort and site example com');
+ assert.equal(cleanWatchQuery('woningtekort AND site:example.com'),'woningtekort site example com');
  assert.equal(cleanWatchQuery('hi'),null);
  assert.equal(cleanWatchQuery('x'.repeat(220)),null);
  assert.ok(watchTerms('Nederland kabinet woningbouw woningbouw').includes('woningbouw'));
@@ -18,3 +18,5 @@ test('watch feed uses publisher attribution and links from Google RSS',()=>{
  assert.equal(parsed[0].when,'2026-11-10T11:00:00.000Z');
  assert.equal(parsed[0].discovery,'story-watch-search');
 });
+
+test('government and public-affairs terms are valid watch keywords',()=>{assert.equal(cleanWatchQuery('woningbouw kabinet'),'woningbouw kabinet');assert.equal(cleanWatchQuery('Nederland Europese Commissie'),'nederland europese commissie');});

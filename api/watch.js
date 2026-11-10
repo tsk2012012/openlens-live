@@ -1,5 +1,5 @@
 /* On-demand Story Watch discovery. No background process or automatic alerts. */
-const STOP=new Set('de het een en van voor met naar over door op om uit als zijn is wordt bij dat die deze dit er in aan te tot ook wat wie where with from after before about that this the and for its are was were have has will new meer nieuws hoe wat wie waarom kabinet nieuwsbericht netherlands nederland dutch europe eu europees european'.split(' '));
+const STOP=new Set('de het een en van voor met naar over door op om uit als zijn is wordt bij dat die deze dit er in aan te tot ook wat wie where with from after before about that this the and for its are was were have has will new meer nieuws hoe wat wie waarom nieuwsbericht'.split(' '));
 export function watchTerms(input){
  const words=String(input??'').normalize('NFKC').toLowerCase().match(/[\p{L}\p{N}][\p{L}\p{N}-]*/gu)||[];
  const clean=[...new Set(words.filter(w=>w.length>=3&&!STOP.has(w)))].slice(0,9);
