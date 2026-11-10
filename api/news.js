@@ -1,3 +1,4 @@
+import {parseRss,parseGdelt,gdeltUrl,feedsFor,isOnTopic,combineArticles} from './news-providers.js';
 /* OpenLens optional same-origin news endpoint (Vercel-compatible, Node 20+).
  * No API key. Fetches Google News RSS and returns publisher attribution from
  * feed metadata; article links may pass through news.google.com.
@@ -147,35 +148,60 @@ export default async function handler(req,res) {
  }
  res.setHeader('Content-Type','application/json; charset=utf-8');
  res.setHeader('Cache-Control','public, max-age=0, s-maxage=600, stale-while-revalidate=1800');
- const ctl=new AbortController(),timeout=setTimeout(()=>ctl.abort(),8500);
+ const ctl=new AbortController(),timeout=setTimeout(()=>ctl.abort(),12500);
  try{
-  const results=await Promise.allSettled(searches.map(async s=>{
-   const r=await fetch(feedUrl(s.query,s.locale),{signal:ctl.signal,headers:{'User-Agent':'OpenLensDemo/1.0 (non-commercial headline review)'}});
-   if(!r.ok)throw new Error('Upstream HTTP '+r.status);
-   return parseFeed(await r.text(),s.locale,s.max,s.discovery);
-  }));
-  const seen=new Set(),articles=[],sampleCounts={general:0,publisherDiscovery:0,primaryDocuments:0,supplementalUS:0};
-  const discoveryCounts={};
-  for(const r of results){
-   if(r.status!=='fulfilled')continue;
-   for(const a of r.value){
-    if(seen.has(a.url))continue;
-    seen.add(a.url);articles.push(a);
-    discoveryCounts[a.discovery]=(discoveryCounts[a.discovery]||0)+1;
-    if(a.discovery==='general')sampleCounts.general++;
-    else if(a.discovery==='official-institutional-sources')sampleCounts.primaryDocuments++;
-    else if(a.discovery.startsWith('supplemental-us'))sampleCounts.supplementalUS++;
+  const publisherFeeds=feedsFor(topic,country,language);
+  const jobs=[
+   ...searches.map(async s=>{
+    const r=await fetch(feedUrl(s.query,s.locale),{signal:ctl.signal,headers:{'User-Agent':'OpenLensDemo/1.0 (noncommercial feed browser)'}});
+    if(!r.ok)throw Error('Google News HTTP '+r.status);
+    return {source:'Google News RSS',name:s.discovery,articles:parseFeed(await r.text(),s.locale,s.max,s.discovery)};
+   }),
+   ...publisherFeeds.map(async spec=>{
+    const r=await fetch(spec.url,{signal:ctl.signal,headers:{'User-Agent':'OpenLens/1.0 (news research)'}});
+    if(!r.ok)throw Error('Original publisher RSS HTTP '+r.status);
+    const xml=await r.text();if(xml.length>1200000)throw Error('Original publisher RSS too large');
+    return {source:'Publisher RSS',name:spec.name,articles:parseRss(xml,spec,Number(period)).filter(a=>isOnTopic(a.title,topic))};
+   }),
+   (async()=>{
+    const r=await fetch(gdeltUrl(topic,period),{signal:ctl.signal,headers:{'User-Agent':'OpenLens/1.0 (news research)'}});
+    if(!r.ok)throw Error('GDELT HTTP '+r.status);
+    const text=await r.text();if(text.length>2000000)throw Error('GDELT feed too large');
+    return {source:'GDELT DOC 2.0',name:'GDELT',articles:parseGdelt(JSON.parse(text))};
+   })()
+  ];
+  const results=await Promise.allSettled(jobs);
+  const discovered=[],sourceHealth=[],discoveryCounts={};
+  const sampleCounts={general:0,publisherDiscovery:0,primaryDocuments:0,supplementalUS:0,originalRss:0,gdelt:0};
+  for(let i=0;i<results.length;i++){
+   const r=results[i];
+   if(r.status!=='fulfilled'){
+    sourceHealth.push({source:i<searches.length?'Google News RSS':i<searches.length+publisherFeeds.length?'Publisher RSS':'GDELT DOC 2.0',status:'unavailable'});
+    continue;
+   }
+   const batch=r.value;
+   sourceHealth.push({source:batch.source,name:batch.name,status:'ok',count:batch.articles.length});
+   for(const article of batch.articles){
+    discovered.push(article);
+    const discovery=article.discovery;
+    discoveryCounts[discovery]=(discoveryCounts[discovery]||0)+1;
+    if(discovery==='general')sampleCounts.general++;
+    else if(discovery==='official-institutional-sources')sampleCounts.primaryDocuments++;
+    else if(discovery.startsWith('supplemental-us'))sampleCounts.supplementalUS++;
+    else if(discovery==='publisher-rss')sampleCounts.originalRss++;
+    else if(discovery==='gdelt-index')sampleCounts.gdelt++;
     else sampleCounts.publisherDiscovery++;
    }
   }
-  if(!articles.length)throw new Error('Feeds returned no articles');
+  const articles=combineArticles(discovered).slice(0,360);
+  if(!articles.length)throw Error('Feeds returned no articles');
   // A source-targeted supplement increases discovery opportunities, not political representativeness.
   res.statusCode=200;
   return res.end(JSON.stringify({
-   articles,provider:'Google News RSS',queryTopic:topic,edition:{country:countryCode,language:lang},
+   articles,provider:'Google News RSS, original publisher RSS and GDELT (when available)',sourceHealth,queryTopic:topic,edition:{country:countryCode,language:lang},
    fetchedAt:new Date().toISOString(),sampleCounts,discoveryCounts,
    discoveryMode:searches.length>1?'general-plus-labelled-source-discovery':'general-only',
-   warning:'Google News RSS is a nonrepresentative sample; targeted Dutch, European and official-source searches supplement discovery. Search selection is not a balanced political sample. Institutional publications are not independent newsroom reporting, and publisher ratings cannot verify article accuracy.'
+   warning:'Google News, original publisher feeds and independent GDELT discovery are overlapping, incomplete nonrepresentative samples. Search selection is not a balanced political sample. Institutional publications are not independent newsroom reporting, and publisher ratings cannot verify article accuracy.'
   }));
  }catch(err){res.statusCode=503;return res.end(JSON.stringify({error:'Live headlines unavailable',detail:String(err.message||err)}))}
  finally{clearTimeout(timeout)}
