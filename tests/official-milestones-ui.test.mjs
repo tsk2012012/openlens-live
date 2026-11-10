@@ -21,3 +21,5 @@ test('no official event can be rendered from a third-party link',async()=>{
  assert.match(src,/new Set\(\(record\.seen\|\|\[\]\)/);
  assert.match(src,/last check/);
 });
+
+test('official milestone research can be exported separately',async()=>{const src=await read('official-milestones.js');assert.match(src,/data-ol-export-official/);assert.match(src,/openlens-official-timeline\.json/);});

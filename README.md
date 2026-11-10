@@ -117,3 +117,5 @@ The manual Story Watch check now also retrieves direct Dutch Tweede Kamer OData 
 Matches are **heuristic keyword matches** and can be unrelated to the tracked story; inspect the original documents before citing a linkage. Each manual check maintains its own local record ID+status fingerprint so changed and newly discovered entries are surfaced separately from news headlines. The user can request an official-record refresh without refreshing news. Official results are stored locally and separately from the existing Story Watch storage and can be cleared with the watch. If a source is unavailable or responds with no matching records, the UI makes that limitation explicit. There is no background polling, alerting or independent political assessment.
 
 Official source references: https://opendata.tweedekamer.nl/ and https://eur-lex.europa.eu/content/help/search/predefined-rss.html?locale=en.
+
+Official-record research can be exported separately from media matches using **Export official timeline** in Story Watch. This includes source identifiers, status labels, match caveats, and the local check history.

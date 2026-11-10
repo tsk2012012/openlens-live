@@ -107,6 +107,12 @@ function enhance(){
   const caption=document.createElement('span');caption.textContent='New / changed official records on last check';
   div.append(number,caption);stats.append(div);
  }
+ const actions=document.querySelector('.ol-watch-buttons');
+ if(actions&&!actions.querySelector('[data-ol-export-official]')){
+  const button=document.createElement('button');button.className='ol-watch-btn';
+  button.type='button';button.dataset.olExportOfficial='';
+  button.textContent='Export official timeline';actions.append(button);
+ }
  const css=document.getElementById('ol-official-stat-style');
  if(!css){const style=document.createElement('style');style.id='ol-official-stat-style';style.textContent=
   '.ol-watch-stat-row{grid-template-columns:repeat(4,minmax(0,1fr))}@media(max-width:650px){.ol-watch-stat-row{grid-template-columns:repeat(2,minmax(0,1fr))}}';document.head.append(style)}
@@ -150,8 +156,19 @@ async function checkOfficial(id){
 const previous=render;
 render=function(){previous();enhance()};
 document.addEventListener('click',e=>{
- const button=e.target.closest?.('[data-ol-official-check],[data-ol-official-expand],[data-ol-check],[data-ol-check-all]');
+ const button=e.target.closest?.('[data-ol-export-official],[data-ol-official-check],[data-ol-official-expand],[data-ol-check],[data-ol-check-all]');
  if(!button)return;
+ if(button.hasAttribute('data-ol-export-official')){
+  const ids=cleanState().map(w=>({id:w.id,title:w.title,query:w.query,records:registry[w.id]||null}));
+  const data={app:'OpenLens',type:'Official Story Watch timeline',version:1,
+   exportedAt:new Date().toISOString(),method:'Direct-source records with unverified keyword relevance',
+   watches:ids};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const href=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=href;a.download='openlens-official-timeline.json';
+  document.body.append(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(href),1500);return;
+ }
  const own=button.dataset.olOfficialCheck;
  if(own){checkOfficial(own);return}
  const expand=button.dataset.olOfficialExpand;
