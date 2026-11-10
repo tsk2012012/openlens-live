@@ -81,3 +81,7 @@ Expanded exact-name source-type labels across the sampled topic feeds. The regis
 ### Final spot checks in nine topic feeds
 
 Resolved the latest unmatched names including WTOK, WRAL, Iowa Capital Dispatch, National Catholic Reporter, Genfinity, JournalArta, Britannica, Wood Mackenzie, Bioengineer.org and Travel Market Report. These are role/type identifications; only outlets with published independent ratings receive a political category. New or renamed sources appearing in future feeds may still require manual identification.
+
+## Local editorial evidence review
+
+The evidence-review workspace is a **personal research tool**, not an automated bias-rating engine. Reviewers confirm reading original publisher articles and record URL, date, topic, national political context, content format, framing observation, source-selection details, and their own name/initials. Observations are subjective and reviewer identities are self-reported. To make a working publisher interpretation eligible for review, the local dataset must cover 15 distinct articles, three topics, three reviewer aliases, and publication dates spanning 21 days. The app may then store a locally proposed interpretation with a substantive explanation, but it never enters the independent AllSides rating chart. This is inspired by multipartisan, multi-article review principles used by AllSides and Ad Fontes; it is not a certified rating. Data stays on the device unless exported.
