@@ -72,8 +72,9 @@
   let biasFilter='all';
   const escapeHTML=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const rated=name=>{
-    const key=normalizePublisher(name),known=ratings[key]||additionalRatings[key];
+    const key=normalizePublisher(name),audited=window.OpenLensSourceAudit?.lookup(name),known=audited?.rating?{rating:audited.rating,confidence:audited.confidence,source:audited.source}:ratings[key]||additionalRatings[key];
     if(known)return known;
+    if(audited&&!audited.politicallyAssessable)return {rating:'Other source',confidence:'Not applicable',source:null,reason:audited.type};
     if(institutionalSources[key])return {rating:'Other source',confidence:'Not applicable',source:null,reason:institutionalSources[key]};
     return {rating:'Unrated',confidence:'Not assessed',source:null};
   };
@@ -107,7 +108,7 @@
 .omission-stat strong{color:#35435c}
 @media(max-width:600px){.bias-panel{padding:13px}.bias-panel-head{align-items:start}.bias-legend{gap:8px 12px}.bias-legend-item{font-size:10px}}
 `;
-  const style=document.createElement('style');style.textContent=css+".bias-related{border:1px solid #f2d8d9;background:#fffafa;border-radius:9px;padding:12px;margin-top:15px}.bias-related h3{margin:0 0 5px;font-size:12px;color:#853a42}.bias-related h3 small{font-weight:450;font-size:10px;color:#8590a3}.bias-related p,.bias-no-match{font-size:11px;line-height:1.55;color:#718099;margin:7px 0}.bias-related-row{display:flex;align-items:flex-start;flex-wrap:wrap;gap:6px;border-top:1px solid #f4e7e7;padding:9px 0}.bias-related-row a{font-weight:650;font-size:11px;flex:1 1 170px}.bias-related-row small{font-size:10px;color:#7c879d;flex-basis:100%}.bias-no-match{border:1px solid #e8edf4;background:#f7f9fe;border-radius:8px;padding:10px 12px;margin-top:15px}"+".bias-unknown-details{border-top:1px solid #e6eaf2;margin-top:12px;padding-top:10px}.bias-unknown-details summary{font-weight:730;color:#465774;font-size:11px;cursor:pointer}.bias-detail-list{font-size:11px;line-height:1.65;color:#60708b;margin:8px 0;overflow-wrap:anywhere}"+".bias-buttons{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}.bias-buttons button{background:#fff;border:1px solid #dce2ef;border-radius:8px;padding:7px 10px;font-size:11px;color:#43526c;font-weight:700}.bias-buttons button.active,.bias-buttons button:hover{background:#eaf0ff;border-color:#9ab0f0;color:#234aca}.bias-overall{border-color:#dce5f8}.bias-overall .bias-method a{text-decoration:underline}";document.head.appendChild(style);
+  const style=document.createElement('style');style.textContent=".bias-audit-details{margin-top:13px;border-top:1px solid #e5ebe6;padding-top:11px}.bias-audit-details>summary{font-size:12px;font-weight:760;cursor:pointer;color:#2c6552}.bias-audit-list{max-height:370px;overflow:auto;margin-top:9px;border:1px solid #e4ece5;border-radius:9px}.bias-audit-entry{display:grid;grid-template-columns:minmax(100px,1.25fr) minmax(95px,1fr) minmax(90px,.8fr) auto;gap:8px;padding:9px 10px;font-size:11px;border-bottom:1px solid #e9eee8;align-items:center}.bias-audit-entry strong{color:#2d4c40;overflow-wrap:anywhere}.bias-audit-entry span{color:#697c71}.bias-audit-entry a{color:#097666}.bias-audit-entry:last-child{border-bottom:0}@media(max-width:600px){.bias-audit-entry{grid-template-columns:1fr 1fr;gap:4px}.bias-audit-entry strong{grid-column:1/-1}}"+css+".bias-related{border:1px solid #f2d8d9;background:#fffafa;border-radius:9px;padding:12px;margin-top:15px}.bias-related h3{margin:0 0 5px;font-size:12px;color:#853a42}.bias-related h3 small{font-weight:450;font-size:10px;color:#8590a3}.bias-related p,.bias-no-match{font-size:11px;line-height:1.55;color:#718099;margin:7px 0}.bias-related-row{display:flex;align-items:flex-start;flex-wrap:wrap;gap:6px;border-top:1px solid #f4e7e7;padding:9px 0}.bias-related-row a{font-weight:650;font-size:11px;flex:1 1 170px}.bias-related-row small{font-size:10px;color:#7c879d;flex-basis:100%}.bias-no-match{border:1px solid #e8edf4;background:#f7f9fe;border-radius:8px;padding:10px 12px;margin-top:15px}"+".bias-unknown-details{border-top:1px solid #e6eaf2;margin-top:12px;padding-top:10px}.bias-unknown-details summary{font-weight:730;color:#465774;font-size:11px;cursor:pointer}.bias-detail-list{font-size:11px;line-height:1.65;color:#60708b;margin:8px 0;overflow-wrap:anywhere}"+".bias-buttons{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}.bias-buttons button{background:#fff;border:1px solid #dce2ef;border-radius:8px;padding:7px 10px;font-size:11px;color:#43526c;font-weight:700}.bias-buttons button.active,.bias-buttons button:hover{background:#eaf0ff;border-color:#9ab0f0;color:#234aca}.bias-overall{border-color:#dce5f8}.bias-overall .bias-method a{text-decoration:underline}";document.head.appendChild(style);
   if(typeof render!=='function'||typeof filteredArticles!=='function'){return}
   const originalFiltered=filteredArticles;
   filteredArticles=function(s){return originalFiltered(s).filter(a=>groupMatches(rated(sourceInfo(a).name).rating))};
@@ -146,6 +147,38 @@
     if(unratedNames.length){const b=document.createElement('div');b.className='bias-detail-list';const strong=document.createElement('strong');strong.textContent='Unrated or unverified names: ';b.append(strong,document.createTextNode(unratedNames.join(' · ')));reviewDetails.append(b)}
     if(otherNames.length){const b=document.createElement('div');b.className='bias-detail-list';const strong=document.createElement('strong');strong.textContent='Non-news / institutional: ';b.append(strong,document.createTextNode(otherNames.map(n=>n+' — '+rated(n).reason).join(' · ')));reviewDetails.append(b)}
     overallPanel.append(reviewDetails);
+
+    const audit=window.OpenLensSourceAudit;
+    if(audit){
+      const profiles=allNames.map(name=>({name,meta:audit.lookup(name),lean:rated(name)}));
+      const recognized=profiles.filter(x=>x.meta.identityStatus==='Explicitly classified').length;
+      const institutions=profiles.filter(x=>!x.meta.politicallyAssessable).length;
+      const newsUnrated=profiles.filter(x=>x.meta.politicallyAssessable&&x.lean.rating==='Unrated').length;
+      const unknown=profiles.filter(x=>x.meta.type==='Identity review needed').length;
+      const details=document.createElement('details');details.className='bias-audit-details';
+      const heading=document.createElement('summary');
+      heading.textContent='Source audit · '+recognized+'/'+profiles.length+' identified · '+institutions+' institutional · '+newsUnrated+' without independent ratings';
+      details.append(heading);
+      const guide=document.createElement('p');guide.className='bias-method';
+      guide.textContent='Each line separates source identity from political leaning. AllSides ratings reflect reviewed online reporting, not quality or truth. Organizations are classified by type, and uncertain identities remain unverified.';
+      details.append(guide);
+      const items=document.createElement('div');items.className='bias-audit-list';
+      profiles.sort((a,b)=>a.name.localeCompare(b.name)).forEach(x=>{
+        const line=document.createElement('div');line.className='bias-audit-entry';
+        const name=document.createElement('strong');name.textContent=x.name;
+        const kind=document.createElement('span');kind.textContent=x.meta.type;
+        const rating=document.createElement('span');rating.textContent=x.lean.rating==='Unrated'?'Bias not assessed':x.lean.rating==='Other source'?'Not a news bias rating':x.lean.rating;
+        line.append(name,kind,rating);
+        if(x.lean.source){const a=document.createElement('a');a.href=x.lean.source;a.target='_blank';a.rel='noopener noreferrer';a.textContent='Evidence ↗';line.append(a)}
+        items.append(line);
+      });
+      details.append(items);
+      overallPanel.append(details);
+      const note=document.createElement('p');note.className='bias-method';
+      note.textContent=unknown+' publisher identities still need individual verification. No political values were inferred from ownership, language, location or headlines.';
+      overallPanel.append(note);
+    }
+
     const bar=document.querySelector('.filterbar');if(bar)bar.before(overallPanel);
 
     const detailTop=document.querySelector('.detail-top');
@@ -181,6 +214,7 @@
     document.querySelectorAll('.coverage-row').forEach(row=>{
       const name=row.querySelector('.outlet-name')?.textContent?.trim();if(!name)return;
       const r=rated(name),sub=row.querySelector('.outlet-sub');if(sub){const tag=document.createElement('span');tag.className='bias-outlet-badge';tag.innerHTML=badge(name);sub.after(tag)}
+      const audited=window.OpenLensSourceAudit?.lookup(name);if(audited&&sub){const kind=document.createElement('span');kind.className='bias-source-kind';kind.textContent=audited.type;kind.title=audited.typeExplanation;sub.after(kind)}
       if(r.source){const foot=row.querySelector('.coverage-footer');if(foot){const a=document.createElement('a');a.href=r.source;a.textContent=`AllSides ${r.rating} · confidence ${r.confidence} ↗`;a.target='_blank';a.rel='noopener noreferrer';foot.append(a)}}
     });
     const context=document.querySelectorAll('.story-analytics .analytic-item');context.forEach(el=>{const name=el.querySelector('strong')?.textContent?.trim();if(!name)return;const old=el.querySelector('.pill-outline');if(old)old.outerHTML=badge(name)});
