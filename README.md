@@ -77,3 +77,7 @@ OpenLens now distinguishes source category, independent AllSides publisher bias 
 ### Expanded identity audit review
 
 Expanded exact-name source-type labels across the sampled topic feeds. The registry now distinguishes public-service broadcasters, local newsrooms, news agencies, specialist publications, businesses, universities, research institutes, government agencies, UN institutions, NGOs, political organizations and platforms. Identity typing is not proof of objectivity, credibility, or editorial position. New `tests/source-audit.test.mjs` protects against invented bias labels and accidental omission of the source-audit script in local development.
+
+### Final spot checks in nine topic feeds
+
+Resolved the latest unmatched names including WTOK, WRAL, Iowa Capital Dispatch, National Catholic Reporter, Genfinity, JournalArta, Britannica, Wood Mackenzie, Bioengineer.org and Travel Market Report. These are role/type identifications; only outlets with published independent ratings receive a political category. New or renamed sources appearing in future feeds may still require manual identification.
