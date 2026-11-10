@@ -65,3 +65,7 @@ The news API merges a general Google News RSS sample with two explicitly supplem
 Article previews show the headline immediately. Google News aggregation links do not provide original publisher text. Direct publisher links may provide a description or short lead; these are not complete AI summaries.
 
 Use npm run check before pushing. Keep API handlers and browser scripts together, so future deployments do not override features.
+
+## Focused news topics (November 2026)
+
+The Explore page provides quick-access chips and a full topic selector for Migration, Dutch national politics, Gaza, Ukraine, Geopolitics, Middle East and EU policy. Selecting one triggers a dedicated Google News RSS search; GDELT has matching fallback queries. Dutch national politics defaults to the Netherlands/Dutch news edition unless the user selects another country or language. The selected query controls which fetched headlines are shown, so headline keyword classification does not accidentally hide relevant articles. These are incomplete samples and do not prove same-event matches, editorial omissions, or article truth.

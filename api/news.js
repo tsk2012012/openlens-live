@@ -11,7 +11,14 @@ const topics = {
   business: '(economy OR inflation OR interest rates OR trade)',
   technology: '(artificial intelligence OR technology OR cybersecurity)',
   climate: '(climate change OR clean energy OR emissions)',
-  health: '(public health OR medical research OR healthcare)'
+  health: '(public health OR medical research OR healthcare)',
+  migration: '(migration OR immigration OR asylum OR refugees OR border policy OR migratie OR asiel)',
+  'dutch-politics': '("Tweede Kamer" OR "Nederlandse politiek" OR "Dutch parliament" OR "Dutch government" OR kabinet OR coalitie)',
+  geopolitics: '("foreign policy" OR geopolitics OR diplomacy OR sanctions OR "international security")',
+  gaza: '(Gaza OR Rafah OR "Gaza Strip" OR "Gaza ceasefire" OR "Gaza humanitarian aid")',
+  ukraine: '(Ukraine OR Ukrainian OR Kyiv OR "Russia Ukraine" OR Zelensky)',
+  'middle-east': '("Middle East" OR Israel OR Iran OR Lebanon OR Syria OR Gaza)',
+  'eu-policy': '("European Union" OR "European Commission" OR "European Parliament" OR "EU policy")'
 };
 const countryLang = {
   Netherlands: ['NL', 'nl', 'nl'],
@@ -60,12 +67,13 @@ export default async function handler(req,res) {
  const topic=Object.prototype.hasOwnProperty.call(topics,p.get('topic'))?p.get('topic'):'all';
  const country=p.get('country')||'all',language=p.get('language')||'all';
  const period=['1','7','30'].includes(p.get('period'))?p.get('period'):'7';
- const edition=(countryLang[country]||['US','en-US','en']).slice();
+ const dutchDefault=topic==='dutch-politics'&&country==='all'&&language==='all';
+ const edition=(countryLang[country]||(dutchDefault?countryLang.Netherlands:['US','en-US','en'])).slice();
  if(langCode[language]){edition[2]=langCode[language];edition[1]=edition[2]==='en'?'en-'+edition[0]:edition[2]}
  const [countryCode,hl,lang]=edition;
  const feedUrl=q=>{const u=new URL('https://news.google.com/rss/search');u.searchParams.set('q',q);u.searchParams.set('hl',hl);u.searchParams.set('gl',countryCode);u.searchParams.set('ceid',countryCode+':'+lang);return u};
  const searches=[{query:topics[topic]+' when:'+period+'d',max:110,discovery:'general'}];
- const supplement=(country==='all'||country==='United States')&&(language==='all'||language==='English');
+ const supplement=topic!=='dutch-politics'&&(country==='all'||country==='United States')&&(language==='all'||language==='English');
  if(supplement){
   const groups=[
    ['foxnews.com','nypost.com','newsmax.com','washingtonexaminer.com','dailywire.com'],
@@ -87,7 +95,7 @@ export default async function handler(req,res) {
   if(!articles.length)throw new Error('Feeds returned no articles');
   res.statusCode=200;
   return res.end(JSON.stringify({
-   articles,provider:'Google News RSS',edition:{country:countryCode,language:lang},
+   articles,provider:'Google News RSS',queryTopic:topic,edition:{country:countryCode,language:lang},
    fetchedAt:new Date().toISOString(),sampleCounts,
    discoveryMode:supplement?'general-plus-right-source-discovery':'general-only',
    warning:'This is a nonrepresentative sample. Supplemental US/English source-targeted searches discover more right-rated publishers. Publisher ratings do not verify individual reports.'
