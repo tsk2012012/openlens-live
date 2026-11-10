@@ -36,7 +36,7 @@ test('editorial browse opens a story before revealing detailed analysis',()=>{
  assert.match(detail,/Comparison details/);
  assert.match(detail,/Back to all stories/);
 });
-test('existing bookmarks and publisher data are preserved',()=>{
+test('existing bookmarks and publisher data are preserved',async()=>{
  assert.match(src,/data-action="save"/);
  assert.match(src,/filterSection\(\)/);
  assert.match(src,/comparisonDetail\(s\)/);
