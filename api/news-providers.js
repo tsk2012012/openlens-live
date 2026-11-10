@@ -66,12 +66,25 @@ export function feedsFor(topic,country='all',language='all'){
   if(['all','netherlands','dutch-politics','public-finances'].includes(topic))
    feeds.push({name:'NU',language:'Dutch',url:'https://www.nu.nl/rss/Politiek',domains:['nu.nl']});
  }
- if(['all','English'].includes(language)&&['all','europe','eu-policy','eu-institutions','migration','geopolitics'].includes(topic))
+ if(['all','Dutch'].includes(language)){
+  const general=['all','netherlands','dutch-politics','eu-policy','migration','housing','public-finances','local-government'];
+  if(general.includes(topic)){
+   feeds.push({name:'NRC',language:'Dutch',url:'https://www.nrc.nl/rss/',domains:['nrc.nl']});
+   feeds.push({name:'De Telegraaf',language:'Dutch',url:'https://www.telegraaf.nl/rss',domains:['telegraaf.nl']});
+   feeds.push({name:'de Volkskrant',language:'Dutch',url:'https://www.volkskrant.nl/voorpagina/rss',domains:['volkskrant.nl']});
+   feeds.push({name:'Trouw',language:'Dutch',url:'https://www.trouw.nl/voorpagina/rss.xml',domains:['trouw.nl']});
+   feeds.push({name:'AD.nl',language:'Dutch',url:'https://www.ad.nl/home/rss.xml',domains:['ad.nl']});
+  }
+ }
+ if(['all','English'].includes(language)&&['all','europe','eu-policy','eu-institutions','migration','geopolitics'].includes(topic)){
   feeds.push({name:'POLITICO.eu',language:'English',url:'https://www.politico.eu/feed/',domains:['politico.eu']});
- return feeds.slice(0,3);
+  feeds.push({name:'DutchNews.nl',language:'English',url:'https://www.dutchnews.nl/feed/',domains:['dutchnews.nl']});
+  feeds.push({name:'NL Times',language:'English',url:'https://nltimes.nl/feed',domains:['nltimes.nl']});
+ }
+ return feeds.slice(0,11);
 }
 export function isOnTopic(title,topic){
- const terms={housing:/woning|bouw|huur|housing/i,migration:/migr|asiel|vluchteling|refugee/i,
+ const terms={'dutch-politics':/kabinet|kamer|minister|coalitie|verkiez|parlement|politiek|begroting/i,housing:/woning|bouw|huur|housing/i,migration:/migr|asiel|vluchteling|refugee/i,
   'public-finances':/belasting|begroting|budget|financ/i,'local-government':/gemeent|provinc|lokaal/i,
   education:/onderwijs|school|student|universit/i,'healthcare-nl':/zorg|hospital|ziekenhuis/i,
   'social-policy':/armoede|sociaal|uitkering|social/i,'climate-energy':/klimaat|energie|stroom|netcongestie/i,

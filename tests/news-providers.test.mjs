@@ -29,3 +29,12 @@ test('canonical URL and same-source headline duplicates collapse while preservin
  {url:'https://news.google.com/rss/articles/12',source:'NOS',title:'Nieuws'}
  ]);assert.equal(r.length,1);assert.equal(r[0].imageUrl,'https://nos.nl/photo.jpg');
 });
+
+test('Dutch and European publishers are requested as original feeds, without forcing a political label',()=>{
+ const general=feedsFor('dutch-politics');
+ for(const name of ['NOS','NU','NRC','De Telegraaf','de Volkskrant','Trouw','AD.nl'])assert.ok(general.some(f=>f.name===name),name);
+ const european=feedsFor('eu-policy');
+ for(const name of ['POLITICO.eu','DutchNews.nl','NL Times'])assert.ok(european.some(f=>f.name===name),name);
+ assert.ok(!isOnTopic('Sportnieuws uit Amsterdam','dutch-politics'));
+ assert.ok(isOnTopic('Debat in de Tweede Kamer','dutch-politics'));
+});

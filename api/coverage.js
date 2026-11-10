@@ -1,6 +1,6 @@
 /* Investigate more coverage of one headline: search results are NOT automatic same-event matches. */
 import {safeLink,gdeltUrl,parseGdelt} from './news-providers.js';
-const STOP=new Set('de het een en van naar voor met die dat deze dit zijn werd worden kan om maar ook hoe door over bij uit als tot na iets nieuw nieuwe weer tegen nog wel nu vandaag gisteren terwijl meer nieuws nieuwsbericht eerste tweede nederland nederlandse kabinet regering staat minister europese europees eu europe uitkomst the and or of for from that this with were was have has will says say over amid after against what how why today news latest new report reports about by into near on in at to a an'.split(' '));
+const STOP=new Set('de het een en van naar voor met die dat deze dit zijn werd worden kan om maar ook hoe door over bij uit als tot na iets nieuw nieuwe weer tegen nog wel nu vandaag gisteren terwijl meer nieuws nieuwsbericht eerste tweede wil willen moest moet gaat gaan gaat nieuwe nieuw nederland nederlandse kabinet regering staat minister europese europees eu europe uitkomst the and or of for from that this with were was have has will says say over amid after against what how why today news latest new report reports about by into near on in at to a an'.split(' '));
 export const topicTerms=text=>[...new Set((String(text||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().match(/[\p{L}\p{N}]{3,}/gu)||[]).filter(x=>!STOP.has(x)))].slice(0,16);
 export function compareTitle(query,title){
  const q=topicTerms(query),t=topicTerms(title);
