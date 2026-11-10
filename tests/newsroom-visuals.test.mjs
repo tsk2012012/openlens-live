@@ -26,7 +26,7 @@ test('cards and blindspots use same evidence-aware publisher metrics',async()=>{
  const core=await read('blindspots-core.js');
  assert.match(core,/metrics[.]assessBlindspot/);
  assert.match(ui,/politiek beoordeeld/);
- assert.match(ui,/geen van deze signalen bewijst/i);
+ assert.match(ui,/OpenLens verzint geen politieke oriëntaties/i);
  assert.match(ui,/data-view="blindspots"/);
  assert.match(home,/window\.OpenLensOpenStory=openStory/);
 });
