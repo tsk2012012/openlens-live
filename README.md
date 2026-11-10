@@ -119,3 +119,9 @@ Matches are **heuristic keyword matches** and can be unrelated to the tracked st
 Official source references: https://opendata.tweedekamer.nl/ and https://eur-lex.europa.eu/content/help/search/predefined-rss.html?locale=en.
 
 Official-record research can be exported separately from media matches using **Export official timeline** in Story Watch. This includes source identifiers, status labels, match caveats, and the local check history.
+
+## Dark mode, source images, source-spectrum bars and blindspot analysis
+
+The newsroom interface now has a persistent light/dark toggle, source-backed images when publisher Open Graph or RSS metadata supplies them, and explicitly attributed Left / Center / Right bars on story cards and reader pages. Images are not generated or guessed; publisher metadata can be unavailable or blocked and then the UI uses a neutral graphic. Image discovery loads lazily for visible cards. Coverage percentages use only distinct named publishers with an attributed political rating as denominator; institutions and unrated sources remain visible as additional counts and are never assumed to be Center. A singleton rated publisher does not establish a representative distribution.
+
+Topics are now browsed under Uitgelicht, Nederland, Europese Unie, Economie & beleid, Samenleving and Internationaal, while the existing full topic dropdown remains available. A separate Blinde vlekken page and preview show **potential sampled-source perspective gaps**, sparse source classification, and stories with only one sampled publisher. These are not verified factual omissions or evidence of deliberate withholding. The data remains a nonrepresentative Google News/GDELT sample with tentative headline clustering. All main views, Story Watch, publisher profiles and local saved research are preserved.

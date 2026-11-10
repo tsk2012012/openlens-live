@@ -104,6 +104,7 @@ function openStory(id){
  openStoryId=id;state.selected=id;state.expanded=false;
  render();focusPage('#ol-reader-heading');
 }
+window.OpenLensOpenStory=openStory;
 function closeStory(){
  if(!openStoryId)return;
  openStoryId=null;state.expanded=false;
