@@ -18,3 +18,8 @@ test('candidate rank removes known article URLs without claiming article agreeme
  const scores=rankCandidates('Nieuwe locaties woningbouw kabinet',[x,{...x,url:'https://www.nrc.nl/a'}],['https://nos.nl/artikel/123']);
  assert.equal(scores.length,1);assert.match(scores[0].verification,/Unverified/);
 });
+
+test('named Dutch province prevents unrelated regional construction matches',()=>{
+ assert.ok(!compareTitle('Kabinet wil woningen bouwen in Limburg','Kabinet wil woningen bouwen in Roosendaal').candidate);
+ assert.ok(compareTitle('Nieuwe woningbouwlocaties in Limburg','Over woningbouwlocaties in Limburg').candidate);
+});

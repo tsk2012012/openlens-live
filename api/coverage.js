@@ -2,11 +2,19 @@
 import {safeLink,gdeltUrl,parseGdelt} from './news-providers.js';
 const STOP=new Set('de het een en van naar voor met die dat deze dit zijn werd worden kan om maar ook hoe door over bij uit als tot na iets nieuw nieuwe weer tegen nog wel nu vandaag gisteren terwijl meer nieuws nieuwsbericht eerste tweede wil willen moest moet gaat gaan gaat nieuwe nieuw nederland nederlandse kabinet regering staat minister europese europees eu europe uitkomst the and or of for from that this with were was have has will says say over amid after against what how why today news latest new report reports about by into near on in at to a an'.split(' '));
 export const topicTerms=text=>[...new Set((String(text||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().match(/[\p{L}\p{N}]{3,}/gu)||[]).filter(x=>!STOP.has(x)))].slice(0,16);
+const PROVINCES=['limburg','groningen','friesland','fryslan','drenthe','overijssel','gelderland','flevoland','utrecht','zeeland','noord brabant','noord holland','zuid holland'];
+const flat=s=>String(s||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[-_]/g,' ').replace(/\s+/g,' ');
+export function sameNamedRegion(query,title){
+ const from=flat(query),to=flat(title);
+ const specific=PROVINCES.filter(n=>(' '+from+' ').includes(' '+n+' '));
+ if(!specific.length)return true;
+ return specific.every(n=>(' '+to+' ').includes(' '+n+' '));
+}
 export function compareTitle(query,title){
  const q=topicTerms(query),t=topicTerms(title);
  const overlap=q.filter(x=>t.includes(x)),den=Math.max(2,Math.min(q.length,t.length));
  const score=q.length&&t.length?overlap.length/den:0;
- return {overlap:overlap.slice(0,8),score:Math.round(score*100),candidate:overlap.length>=2&&score>=0.38};
+ return {overlap:overlap.slice(0,8),score:Math.round(score*100),candidate:overlap.length>=2&&score>=0.38&&sameNamedRegion(query,title)};
 }
 const decode=x=>String(x||'').replace(/<!\[CDATA\[([\s\S]*?)\]\]>/gi,'$1').replace(/<[^>]+>/g,' ')
 .replace(/&#(\d+);/g,(_,n)=>{try{return String.fromCodePoint(Number(n))}catch{return ''}})
