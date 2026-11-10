@@ -60,6 +60,25 @@ function decodeXml(input) {
     .replace(/&#(x[0-9a-f]+|\d+);/gi,(_,p)=>{try {const n=p[0].toLowerCase()==='x'?parseInt(p.slice(1),16):parseInt(p,10);return String.fromCodePoint(n)}catch{return ''}})
     .replace(/&(amp|lt|gt|quot|apos|nbsp);/gi,(_,a)=>({amp:'&',lt:'<',gt:'>',quot:'"',apos:"'",nbsp:' '}[a.toLowerCase()]));
 }
+export function extractFeedImage(block){
+ const tags=[
+  ...String(block||'').matchAll(/<(?:media:thumbnail|media:content|enclosure)\b[^>]*>/gi)
+ ].map(m=>m[0]);
+ for(const tag of tags){
+  if(/<media:content/i.test(tag)&&/\bmedium=["'](?:audio|video)["']/i.test(tag))continue;
+  if(/<enclosure/i.test(tag)&&!/\btype=["']image\//i.test(tag))continue;
+  const raw=tag.match(/\burl=["']([^"']+)["']/i)?.[1];
+  if(!raw)continue;
+  const cleaned=decodeXml(raw);
+  try{
+   const url=new URL(cleaned);
+   if(url.protocol!=='https:'||!url.hostname.includes('.')||url.username||url.password||url.href.length>1600)continue;
+   if(/^(?:localhost|127\.|10\.|192\.168\.|0\.)|\.local$/i.test(url.hostname))continue;
+   return url.href;
+  }catch{}
+ }
+ return null;
+}
 function parseFeed(xml, edition, max=110, discovery='general') {
   const items=[];
   const seen=new Set();
@@ -74,7 +93,7 @@ function parseFeed(xml, edition, max=110, discovery='general') {
     const ms=Date.parse(rawDate);
     if(!title || !/^https?:\/\//.test(url) || seen.has(url))continue;
     seen.add(url);
-    items.push({title,url,domain:source||'Unknown publisher',source:source||'Unknown publisher',when:Number.isFinite(ms)?new Date(ms).toISOString():null,dateType:'feed_pubdate',language:langDisplay[edition[2]]||'Unknown',country:null,provider:'Google News RSS',sourceCountryUnknown:true,discovery});
+    items.push({title,url,domain:source||'Unknown publisher',source:source||'Unknown publisher',imageUrl:extractFeedImage(block),imageAttribution:'Feed image (if available)',when:Number.isFinite(ms)?new Date(ms).toISOString():null,dateType:'feed_pubdate',language:langDisplay[edition[2]]||'Unknown',country:null,provider:'Google News RSS',sourceCountryUnknown:true,discovery});
     if(items.length>=max)break;
   }
   return items;

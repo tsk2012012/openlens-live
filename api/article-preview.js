@@ -99,7 +99,17 @@ function articleLead(html){
   const paragraphs=[...core.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/gi)].map(x=>cleanText(x[1]));
   return paragraphs.find(x=>x.length>=95&&x.length<=1400&&!/cookies|subscribe now|sign up|advertisement|privacy policy|all rights reserved/i.test(x))||'';
 }
+export function safePublisherImage(raw,articleUrl){
+ try{
+  if(typeof raw!=='string'||raw.length>1600)return null;
+  const resolved=new URL(raw,articleUrl);
+  if(resolved.protocol!=='https:'||!resolved.hostname.includes('.')||resolved.username||resolved.password||resolved.port&&resolved.port!=='443')return null;
+  if(isIP(resolved.hostname)||/(^|\.)(localhost|local|internal|test|invalid)$/i.test(resolved.hostname))return null;
+  return resolved.href;
+ }catch{return null}
+}
 export function makePreview(html,url){const meta=metas(html),data=structured(html);
+const imageUrl=safePublisherImage(meta['og:image:secure_url']||meta['og:image']||meta['twitter:image']||'',url);
 const title=cleanText(data.headline||meta['og:title']||meta['twitter:title']||html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]||'');
 const publisherDescription=cleanText(data.description||meta['description']||meta['og:description']||meta['twitter:description']||'');
 const ldBody=typeof data.articleBody==='string'?cleanText(data.articleBody):'';
@@ -115,6 +125,7 @@ if(leadValid && (!descriptionValid || !normalizeWords(lead).includes(normalizeWo
 const source=descriptionValid?'Publisher description':leadValid?'Extracted article lead':null;
 const date=String(data.datePublished||meta['article:published_time']||meta['datepublished']||'');
 return {title:title.slice(0,240)||null,sourceUrl:url,synopsis,highlights,summarySource:source,
+  imageUrl,imageAttribution:imageUrl?'Original publisher Open Graph metadata':null,
   publishedAt:date&&Number.isFinite(Date.parse(date))?new Date(date).toISOString():null,
   fullArticleRead:false,
   notice:source==='Publisher description'?'Publisher-supplied synopsis. May not reflect the full article.':source==='Extracted article lead'?'Short excerpt from an accessible article lead; not a complete summary.':'No reliable article description or readable lead was found. Open the publisher page.'};
