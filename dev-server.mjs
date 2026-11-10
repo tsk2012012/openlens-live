@@ -2,6 +2,7 @@ import {createServer} from 'node:http';
 import {readFile} from 'node:fs/promises';
 import news from './api/news.js';
 import watch from './api/watch.js';
+import coverage from './api/coverage.js';
 import milestones from './api/milestones.js';
 import preview from './api/article-preview.js';
 const assets=new Map([['/','index.html'],['/index.html','index.html'],['/article-preview.js','article-preview.js'],['/bias-extension.js','bias-extension.js'],['/layout-redesign.js','layout-redesign.js'],['/source-audit.js','source-audit.js'],['/favicon.svg','favicon.svg'],['/publisher-directory.js','publisher-directory.js'],['/product-shell.js','product-shell.js'],['/editorial-home.js','editorial-home.js'],['/story-watch.js','story-watch.js'],['/official-milestones.js','official-milestones.js'],['/coverage-metrics.js','coverage-metrics.js'],['/blindspots-core.js','blindspots-core.js'],['/newsroom-visuals.js','newsroom-visuals.js'],['/editorial-review-core.js','editorial-review-core.js'],['/editorial-review.js','editorial-review.js']]);
@@ -10,6 +11,7 @@ createServer(async(req,res)=>{
   const u=new URL(req.url||'/','http://localhost');
   if(u.pathname==='/api/news')return await news(req,res);
   if(u.pathname==='/api/watch')return await watch(req,res);
+  if(u.pathname==='/api/coverage')return await coverage(req,res);
   if(u.pathname==='/api/milestones')return await milestones(req,res);
   if(u.pathname==='/api/article-preview')return await preview(req,res);
   if(!['GET','HEAD'].includes(req.method)){res.writeHead(405,{Allow:'GET, HEAD'});return res.end('Method not allowed')}
