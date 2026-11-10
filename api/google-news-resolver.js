@@ -72,13 +72,22 @@ export async function resolveGoogleNewsUrl(input,{fetchImpl=fetch,signal,timeout
  const id=googleNewsArticleId(input);
  if(!id)throw new Error('Not a supported Google News article URL');
  const articleUrl='https://news.google.com/rss/articles/'+encodeURIComponent(id);
- const first=await googleFetch(articleUrl,{method:'GET'},fetchImpl,signal,timeoutMs);
- const redirected=first.response.headers.get('location');
- if([301,302,303,307,308].includes(first.response.status)&&redirected){
-  const link=publisherUrl(new URL(redirected,articleUrl).href);
-  if(link)return {originalUrl:link,method:'direct-redirect'};
+ let first,location=articleUrl,redirectCount=0;
+ for(;redirectCount<5;redirectCount++){
+  first=await googleFetch(location,{method:'GET'},fetchImpl,signal,timeoutMs);
+  const moved=first.response.headers.get('location');
+  if([301,302,303,307,308].includes(first.response.status)&&moved){
+   const next=new URL(moved,location);
+   const publisher=publisherUrl(next.href);
+   if(publisher)return {originalUrl:publisher,method:'direct-redirect'};
+   if(next.protocol!=='https:'||next.hostname!=='news.google.com')
+    throw new Error('Google News requested an external sign-in or consent page');
+   location=next.href;continue;
+  }
+  break;
  }
- if(!first.response.ok)throw new Error('Google News article not available');
+ if(redirectCount===5)throw new Error('Google News redirect chain exceeded limit');
+ if(!first.response.ok)throw new Error('Google News page HTTP '+first.response.status);
  const params=googleDecodeParams(first.text);
  if(!params)throw new Error('Google News did not provide redirect metadata');
  const second=await googleFetch(RPC,{method:'POST',body:googleRpcBody(id,params),

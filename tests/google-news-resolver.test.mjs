@@ -44,3 +44,21 @@ test('fails closed when signatures or destinations are absent or unsafe',async()
  };
  await assert.rejects(resolveGoogleNewsUrl(input,{fetchImpl:bad}),/no publisher HTTPS URL/);
 });
+
+test('follows same-origin Google redirects to reach the signature',async()=>{
+ let calls=0;
+ const fake=async(url,opts)=>{
+  calls++;
+  if(calls===1)return new Response('',{status:302,headers:{Location:'https://news.google.com/articles/CBMiaF9BVV95cUxQb3BlbmxlbnM4c291cmNlbGluaw'}});
+  if(calls===2)return new Response(fixtureHtml,{status:200});
+  const rpc=String.fromCharCode(41,93,125,39,10)+JSON.stringify([['wrb.fr','Fbv4je',JSON.stringify(['garturlres','https://publisher.example.org/ok',1])]]);
+  return new Response(rpc);
+ };
+ const result=await resolveGoogleNewsUrl(input,{fetchImpl:fake});
+ assert.equal(result.originalUrl,'https://publisher.example.org/ok');
+ assert.equal(calls,3);
+});
+test('does not follow consent or external Google redirects',async()=>{
+ const fake=async()=>new Response('',{status:302,headers:{Location:'https://consent.google.com/consent'}});
+ await assert.rejects(resolveGoogleNewsUrl(input,{fetchImpl:fake}),/consent page/);
+});

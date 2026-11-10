@@ -149,10 +149,19 @@ export default async function handler(req,res){
   try{
    const result=await resolveGoogleNewsUrl(input,{timeoutMs:RESOLVE_TIMEOUT});
    url=result.originalUrl;method=result.method;
-  }catch{
+  }catch(err){
    res.statusCode=200;
-   return res.end(JSON.stringify(fallback(null,
-      'The Google News link could not be resolved to the publisher right now. The headline is not an article summary. Open Google News to continue to the article.',null)));
+   const reason=String(err?.message||'');
+   const code=reason.includes('consent')?'consent-required':
+     reason.includes('page HTTP')?'google-http-error':
+     reason.includes('redirect chain')?'redirect-limit':
+     reason.includes('redirect metadata')?'google-signature-missing':
+     reason.includes('resolution unavailable')?'google-rpc-unavailable':
+     reason.includes('response contained')?'google-result-missing':'network-or-timeout';
+   res.setHeader('Cache-Control','no-store');
+   return res.end(JSON.stringify({...fallback(null,
+      'The Google News link could not be resolved to the publisher right now. Continue through Google News to read the reporting.',null),
+      resolutionFailure:code}));
   }
  }
  try{
