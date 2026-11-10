@@ -5,7 +5,7 @@
 const ARTICLE_PATH=/^\/(?:rss\/)?(?:articles|read)\/([A-Za-z0-9_-]{20,600})\/?$/;
 const RPC='https://news.google.com/_/DotsSplashUi/data/batchexecute?rpcids=Fbv4je';
 const UA='Mozilla/5.0 (compatible; OpenLens/1.0; article-attribution)';
-const MAX_RESPONSE=260_000;
+const MAX_RESPONSE=1_500_000;
 export function googleNewsArticleId(input){
  try{const u=new URL(input);return u.protocol==='https:'&&u.hostname.toLowerCase()==='news.google.com'
   ?u.pathname.match(ARTICLE_PATH)?.[1]||null:null}catch{return null}
@@ -36,7 +36,7 @@ function publisherUrl(input){
  try{
   const u=new URL(input);
   if(u.protocol!=='https:'||!u.hostname.includes('.')||u.username||u.password||u.port&&u.port!=='443')return null;
-  if(u.hostname.toLowerCase()==='news.google.com')return null;
+  if(/(^|\.)google\.com$/i.test(u.hostname))return null;
   return u.href;
  }catch{return null}
 }
