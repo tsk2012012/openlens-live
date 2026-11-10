@@ -38,6 +38,10 @@ test('resolves a Google News URL from mocked responses without following unvalid
 });
 test('fails closed when signatures or destinations are absent or unsafe',async()=>{
  await assert.rejects(resolveGoogleNewsUrl(input,{fetchImpl:async()=>new Response('<html>Blocked</html>')}),/redirect metadata/);
- const bad=async(url,opts)=>opts.method==='GET'?new Response(fixtureHtml):new Response(')]}\\'\\n'.replace('\\\\n','\n')+JSON.stringify([['wrb.fr','Fbv4je',JSON.stringify(['garturlres','http://127.0.0.1/private',1])]]));
+ const bad=async(url,opts)=>{
+  if(opts.method==='GET')return new Response(fixtureHtml);
+  const payload=JSON.stringify([['wrb.fr','Fbv4je',JSON.stringify(['garturlres','http://127.0.0.1/private',1])]]);
+  return new Response(")]}'\n"+payload);
+ };
  await assert.rejects(resolveGoogleNewsUrl(input,{fetchImpl:bad}),/no publisher HTTPS URL/);
 });

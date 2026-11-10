@@ -19,6 +19,12 @@ const css=`
 .ol-p-kind{font-size:11px;font-weight:800;color:#0c7769;margin-bottom:9px}
 .ol-p-synopsis{font-size:14px;line-height:1.75;color:#26354f;white-space:pre-wrap;margin:0 0 12px}
 .ol-p-note{font-size:11px;line-height:1.6;color:#667d71;border-radius:9px;background:#f1f7f2;padding:11px;margin-top:14px}
+.ol-p-highlights{display:grid;gap:9px;margin:12px 0}
+.ol-p-highlight{background:#f7faf6;border:1px solid #dbe9df;border-radius:9px;padding:10px 12px}
+.ol-p-highlight strong{font-size:11px;color:#276b57}
+.ol-p-highlight p{font-size:12px;line-height:1.65;color:#345348;margin:6px 0 0}
+.ol-p-original-note{font-size:11px;color:#668071}
+.ol-preview-dialog [hidden]{display:none!important}
 .ol-preview-dialog [hidden]{display:none!important}
 .ol-p-actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:20px}
 .ol-p-link{display:inline-block;background:#0c7769;color:#fff!important;text-decoration:none;border-radius:8px;padding:10px 13px;font-size:12px;font-weight:750}
@@ -38,7 +44,7 @@ const css=`
 `;
 const style=document.createElement('style');style.textContent=css;document.head.append(style);
 const dlg=document.createElement('dialog');dlg.className='ol-preview-dialog';dlg.setAttribute('aria-label','Article preview');
-dlg.innerHTML=`<div class="ol-p-head"><div><div class="ol-p-label">Source article preview</div><h2 id="ol-p-title">Article title</h2><div class="ol-p-meta" id="ol-p-meta"></div></div><button type="button" class="ol-p-close" aria-label="Close article preview" title="Close">×</button></div><div class="ol-p-content"><div id="ol-p-result" hidden><div class="ol-p-kind" id="ol-p-kind"></div><p class="ol-p-synopsis" id="ol-p-synopsis"></p><div class="ol-p-note" id="ol-p-note"></div></div><div class="ol-p-actions"><a id="ol-p-open" class="ol-p-link" target="_blank" rel="noopener noreferrer">Open original article ↗</a><button type="button" class="ol-p-secondary" id="ol-p-done">Close</button></div></div>`;
+dlg.innerHTML=`<div class="ol-p-head"><div><div class="ol-p-label">Source article preview</div><h2 id="ol-p-title">Article title</h2><div class="ol-p-meta" id="ol-p-meta"></div></div><button type="button" class="ol-p-close" aria-label="Close article preview" title="Close">×</button></div><div class="ol-p-content"><div id="ol-p-result" hidden><div class="ol-p-kind" id="ol-p-kind"></div><p class="ol-p-synopsis" id="ol-p-synopsis"></p><div class="ol-p-highlights" id="ol-p-highlights" hidden></div><div class="ol-p-note" id="ol-p-note"></div></div><div class="ol-p-actions"><a id="ol-p-open" class="ol-p-link" target="_blank" rel="noopener noreferrer">Open original article ↗</a><button type="button" class="ol-p-secondary" id="ol-p-done">Close</button></div></div>`;
 document.body.append(dlg);
 const $=(id)=>dlg.querySelector('#'+id);
 const close=()=>{if(dlg.open)dlg.close()};
@@ -50,10 +56,19 @@ dlg.addEventListener('close',()=>{controller?.abort();requestId++});
 
 const previewCache=new Map();
 function googleFeedLink(u){try{return new URL(u).hostname.toLowerCase()==='news.google.com'}catch{return false}}
-function paintPreview(kind,text,note){
+function paintPreview(kind,text,note,highlights=[]){
   $('ol-p-kind').textContent=kind;
   $('ol-p-synopsis').textContent=text;
   $('ol-p-note').textContent=note;
+  const holder=$('ol-p-highlights');
+  holder.replaceChildren();
+  for(const point of highlights.slice(0,2)){
+    const card=document.createElement('div');card.className='ol-p-highlight';
+    const label=document.createElement('strong');label.textContent=point.label;
+    const excerpt=document.createElement('p');excerpt.textContent=point.text;
+    card.append(label,excerpt);holder.append(card);
+  }
+  holder.hidden=!holder.childElementCount;
   $('ol-p-result').hidden=false;
 }
 async function openPreview(url,title,outlet,when){
@@ -61,37 +76,51 @@ async function openPreview(url,title,outlet,when){
   controller?.abort();
   controller=new AbortController();
   const active=++requestId;
+  const fromGoogle=googleFeedLink(url);
   $('ol-p-title').textContent=title||'Untitled article';
   $('ol-p-meta').textContent=[outlet,when].filter(Boolean).join(' · ');
   $('ol-p-open').href=url;
-  $('ol-p-open').textContent=googleFeedLink(url)?'Open via Google News ↗':'Open publisher article ↗';
+  $('ol-p-open').textContent=fromGoogle?'Continue through Google News ↗':'Open publisher article ↗';
   if(!dlg.open){try{dlg.showModal()}catch{dlg.setAttribute('open','')}}
-  paintPreview('Headline available',
+  paintPreview(fromGoogle?'Finding the original publisher…':'Checking publisher description…',
     title||'Article title unavailable',
-    'This is the source headline, not an article summary. Check the original publisher page for context.');
-  if(googleFeedLink(url)){
-    paintPreview('Headline only · Google News feed',
-      title||'Article headline unavailable',
-      'Shown immediately. Google News did not supply the publisher article text, so an accurate article summary cannot be generated here. Follow the source link to read it.');
-    return;
-  }
+    fromGoogle?'This headline is available now. OpenLens is attempting to identify the original publisher article; the Google News link remains available.':'The headline is available now. An accessible public publisher synopsis may be added shortly.');
   const applyData=data=>{
     if(active!==requestId||!dlg.open)return;
+    const publisherUrl=typeof data.originalUrl==='string'&&/^https:\/\//i.test(data.originalUrl)
+      &&!googleFeedLink(data.originalUrl)?data.originalUrl:null;
+    if(publisherUrl){
+      $('ol-p-open').href=publisherUrl;
+      $('ol-p-open').textContent='Open original publisher ↗';
+    }
+    const highlights=Array.isArray(data.highlights)?data.highlights.filter(x=>x&&typeof x.text==='string'&&typeof x.label==='string'):[];
     if(data.synopsis){
-      paintPreview(data.summarySource||'Publisher article description',data.synopsis,(data.notice||'Publisher-provided text.')+' Not an independently verified full-article summary.');
+      paintPreview(highlights.length>1?'Publisher-backed article highlights':data.summarySource||'Publisher article description',
+        data.synopsis,
+        (data.notice||'Accessible publisher-provided information.')+' These are attributed descriptions or excerpts, not an independent full-article summary.',
+        highlights.length>1?highlights:[]);
+    }else if(publisherUrl){
+      paintPreview('Original publisher located · article text unavailable',
+        title||'Article headline unavailable',
+        data.notice||'The original article link is available, but no reliable public synopsis could be retrieved.');
     }else{
-      paintPreview('Headline only · synopsis unavailable',title||'Article headline unavailable','No reliable publisher article description or lead was accessible. Open the article to read the reporting.');
+      paintPreview('Headline only · publisher could not be resolved',
+        title||'Article headline unavailable',
+        data.notice||'The Google News link could not be resolved. Continue through Google News to read the article.');
     }
     if(data.publishedAt){
       const date=new Date(data.publishedAt);
-      if(Number.isFinite(+date))$('ol-p-meta').textContent=outlet+' · On-page date: '+date.toLocaleString();
+      if(Number.isFinite(+date))$('ol-p-meta').textContent=[outlet,'Publisher date: '+date.toLocaleString()].filter(Boolean).join(' · ');
     }
   };
   if(previewCache.has(url)){applyData(previewCache.get(url));return}
-  // The headline remains visible while the optional publisher preview is checked.
-  const timeout=setTimeout(()=>controller.abort(),3200);
+  // Google decoding needs two small external requests, then optional publisher metadata.
+  // The headline remains visible, and no loading spinner is shown.
+  const timeout=setTimeout(()=>controller.abort(),fromGoogle?12500:4500);
   try{
-    const response=await fetch('/api/article-preview?'+new URLSearchParams({url}),{signal:controller.signal,headers:{Accept:'application/json'}});
+    const response=await fetch('/api/article-preview?'+new URLSearchParams({url}),{
+      signal:controller.signal,headers:{Accept:'application/json'}
+    });
     if(!response.ok)throw new Error('Preview unavailable');
     const data=await response.json();
     if(active!==requestId)return;
@@ -99,9 +128,11 @@ async function openPreview(url,title,outlet,when){
     if(previewCache.size>120)previewCache.delete(previewCache.keys().next().value);
     applyData(data);
   }catch{
-    if(active===requestId&&dlg.open)paintPreview('Headline only · publisher preview timed out',
+    if(active===requestId&&dlg.open)paintPreview(
+      fromGoogle?'Headline only · publisher lookup unavailable':'Headline only · publisher synopsis unavailable',
       title||'Article headline unavailable',
-      'The publisher did not provide an accessible description quickly. The source link remains available. No article content has been invented.');
+      fromGoogle?'Unable to resolve this Google News link right now. Open it through Google News to read the reporting.':'The publisher did not provide an accessible description quickly. Open the original article to read it.'
+    );
   }finally{clearTimeout(timeout)}
 }
 function makeTrigger(article,label,variant){
@@ -124,7 +155,7 @@ function decorate(){
       const section=document.createElement('section');
       section.className='ol-quick-panel';
       const strong=document.createElement('strong');strong.textContent='Article summaries & previews';
-      const note=document.createElement('p');note.textContent='Article headlines appear instantly. A publisher description is shown when accessible; Google News feeds may contain only a headline.';
+      const note=document.createElement('p');note.textContent='Open a source for its original publisher link and public article synopsis where available. Some publishers restrict access.';
       section.append(strong,note);
       const actions=document.createElement('div');actions.className='ol-quick-actions';
       if(articles.length){

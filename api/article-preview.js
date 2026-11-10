@@ -5,9 +5,11 @@
  */
 import { lookup } from 'node:dns/promises';
 import { isIP } from 'node:net';
+import {googleNewsArticleId,resolveGoogleNewsUrl} from './google-news-resolver.js';
 
 const MAX_HTML = 850_000;
 const TIMEOUT = 2800;
+const RESOLVE_TIMEOUT = 3900;
 const AGENT = 'OpenLensPreview/1.0 (+non-commercial metadata preview)';
 
 export function isPublicIP(ip) {
@@ -104,28 +106,68 @@ const ldBody=typeof data.articleBody==='string'?cleanText(data.articleBody):'';
 const lead=ldBody.slice(0,1800)||articleLead(html);
 const descriptionValid=publisherDescription.length>=65&&publisherDescription.length<=1600;
 const leadValid=lead.length>=90;
-const synopsis=descriptionValid?shortWords(publisherDescription,48):leadValid?shortWords(lead,48):null;
+const synopsis=descriptionValid?shortWords(publisherDescription,42):leadValid?shortWords(lead,42):null;
+const highlights=[];
+if(descriptionValid)highlights.push({label:'Publisher description',text:shortWords(publisherDescription,35)});
+const normalizeWords=s=>String(s).toLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ').trim();
+if(leadValid && (!descriptionValid || !normalizeWords(lead).includes(normalizeWords(publisherDescription).slice(0,75))))
+  highlights.push({label:'Accessible article lead',text:shortWords(lead,35)});
 const source=descriptionValid?'Publisher description':leadValid?'Extracted article lead':null;
 const date=String(data.datePublished||meta['article:published_time']||meta['datepublished']||'');
-return {title:title.slice(0,240)||null,sourceUrl:url,synopsis,summarySource:source,
+return {title:title.slice(0,240)||null,sourceUrl:url,synopsis,highlights,summarySource:source,
   publishedAt:date&&Number.isFinite(Date.parse(date))?new Date(date).toISOString():null,
   fullArticleRead:false,
   notice:source==='Publisher description'?'Publisher-supplied synopsis. May not reflect the full article.':source==='Extracted article lead'?'Short excerpt from an accessible article lead; not a complete summary.':'No reliable article description or readable lead was found. Open the publisher page.'};
 }
 
 export default async function handler(req,res){
-res.setHeader('Content-Type','application/json; charset=utf-8');
-res.setHeader('Cache-Control','public, s-maxage=1800, stale-while-revalidate=3600');
-if(req.method!=='GET'){res.statusCode=405;res.setHeader('Allow','GET');return res.end(JSON.stringify({error:'Use GET'}))}
-const params=new URL(req.url||'/', 'http://localhost').searchParams;
-const url=params.get('url');if(!url||url.length>1800){res.statusCode=400;return res.end(JSON.stringify({error:'Missing or oversized article URL.'}))}
-try{const parsed=new URL(url);
- if(parsed.protocol==='https:'&&parsed.hostname.toLowerCase()==='news.google.com'){
-  res.statusCode=200;
-  return res.end(JSON.stringify({title:null,sourceUrl:url,synopsis:null,summarySource:null,publishedAt:null,fullArticleRead:false,notice:'Google News is an aggregator, not a full publisher article.'}));
+ res.setHeader('Content-Type','application/json; charset=utf-8');
+ res.setHeader('Cache-Control','public, s-maxage=1200, stale-while-revalidate=2400');
+ if(req.method!=='GET'){res.statusCode=405;res.setHeader('Allow','GET');return res.end(JSON.stringify({error:'Use GET'}))}
+ const params=new URL(req.url||'/','http://localhost').searchParams;
+ const input=params.get('url');
+ if(!input||input.length>1800){res.statusCode=400;return res.end(JSON.stringify({error:'Missing or oversized article URL.'}))}
+ let parsed;
+ try{parsed=new URL(input)}catch{res.statusCode=400;return res.end(JSON.stringify({error:'Invalid article URL.'}))}
+ if(parsed.protocol!=='https:'||parsed.username||parsed.password){
+  res.statusCode=400;return res.end(JSON.stringify({error:'Only public HTTPS article URLs are supported.'}))
  }
-}catch{res.statusCode=400;return res.end(JSON.stringify({error:'Invalid article URL.'}))}
-
-try{const {html,url:resolved}=await getHtml(url);const info=makePreview(html,resolved);res.statusCode=200;return res.end(JSON.stringify(info))}
-catch(err){res.statusCode=422;return res.end(JSON.stringify({error:'Preview unavailable',reason:String(err.message||err).slice(0,220)}))}
+ const isGoogle=parsed.hostname.toLowerCase()==='news.google.com';
+ if(isGoogle&&!googleNewsArticleId(input)){
+  res.statusCode=400;return res.end(JSON.stringify({error:'Unsupported Google News link format.'}))
+ }
+ const fallback=(originalUrl,reason,method)=>({
+   title:null,sourceUrl:originalUrl||input,originalUrl:originalUrl||null,
+   googleNewsUrl:isGoogle?input:null,synopsis:null,highlights:[],summarySource:null,
+   publishedAt:null,fullArticleRead:false,
+   resolutionStatus:originalUrl?'publisher-link-resolved':'unavailable',
+   resolutionMethod:method||null,
+   notice:reason
+ });
+ let url=input,method=isGoogle?'google-news-rpc':'direct-publisher';
+ if(isGoogle){
+  try{
+   const result=await resolveGoogleNewsUrl(input,{timeoutMs:RESOLVE_TIMEOUT});
+   url=result.originalUrl;method=result.method;
+  }catch{
+   res.statusCode=200;
+   return res.end(JSON.stringify(fallback(null,
+      'The Google News link could not be resolved to the publisher right now. The headline is not an article summary. Open Google News to continue to the article.',null)));
+  }
+ }
+ try{
+  const article=await getHtml(url);
+  const info=makePreview(article.html,article.url);
+  res.statusCode=200;
+  return res.end(JSON.stringify({...info,
+   originalUrl:article.url,googleNewsUrl:isGoogle?input:null,
+   resolutionStatus:isGoogle?'resolved':'direct',
+   resolutionMethod:method,
+   notice:info.notice+' The publisher page was fetched for this preview; article content was not independently fact-checked.'}));
+ }catch{
+  res.statusCode=200;
+  return res.end(JSON.stringify(fallback(url,
+   'The original publisher link was located, but its content is blocked, paywalled or unavailable. Open the publisher page to read it.',
+   method)));
+ }
 }
