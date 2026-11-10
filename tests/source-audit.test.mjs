@@ -38,7 +38,7 @@ test('browser and server assets are distinct',async()=>{
  const server=await readFile(new URL('../api/article-preview.js',import.meta.url),'utf8');
  const dev=await readFile(new URL('../dev-server.mjs',import.meta.url),'utf8');
  assert.match(html,/source-audit\.js\?v=/);
- assert.match(client,/Headline available/);
+ assert.match(client,/Finding the original publisher/);
  assert.match(server,/node:dns\/promises/);
  assert.match(dev,/source-audit\.js/);
 });
