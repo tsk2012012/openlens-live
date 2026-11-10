@@ -80,14 +80,16 @@ export function parseEurlexRss(xml,feedKind,max=60){
 }
 export function relevantMilestones(items,query,days=30,now=Date.now()){
  const search=watchTerms(query).filter(w=>w.length>=3);
- const since=now-(Math.min(Math.max(Number(days)||30,7),90)+2)*86400000;
+ const windowDays=Math.min(Math.max(Number(days)||30,7),90);
+ const since=now-(windowDays+2)*86400000,until=now+windowDays*86400000;
+ const generic=new Set(['kabinet','minister','ministerie','europese','european','commissie','commission','parlement','parliament','brussels','nederland','netherlands','regering','policy']);
  const matched=[];
  for(const item of items){
   const date=Date.parse(item.date),titleTerms=new Set(watchTerms(item.title));
-  if(!Number.isFinite(date)||date<since||date>now+40*86400000)continue;
+  if(!Number.isFinite(date)||date<since||date>until)continue;
   const found=search.filter(x=>titleTerms.has(x));
   // One distinctive keyword suffices for a candidate; never claim exact legislative linkage.
-  if(found.length<2&&!(found.length===1&&found[0].length>=7))continue;
+  if(found.length<2&&!(found.length===1&&found[0].length>=7&&!generic.has(found[0])&&!/^\d+$/.test(found[0])))continue;
   matched.push({...item,matchingKeywords:found.slice(0,5),matchStatus:'Official record; topic relevance is an unverified keyword match'});
  }
  return matched.sort((a,b)=>Date.parse(b.date)-Date.parse(a.date)).slice(0,50);

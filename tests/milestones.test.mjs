@@ -43,3 +43,14 @@ test('Official candidate relevance requires matching keywords and reports uncert
  assert.match(results[0].matchStatus,/unverified/);
  assert.equal(relevantMilestones(rows,'defensie pensioen',30,Date.parse('2026-11-10T13:00:00Z')).length,0);
 });
+
+test('generic governmental keywords alone do not produce false legislative matches',()=>{
+ const now=Date.parse('2026-11-10T13:00:00Z');
+ const rows=parseDutchOdata({value:[
+  {Id:'c12b35c0-aaaa-4bbb-8ccc-100000000003',Datum:'2026-11-10T10:00:00Z',Onderwerp:'Informatie en afspraken met kabinet',Soort:'Commissiedebat',Status:'Gepland'},
+  {Id:'c12b35c0-aaaa-4bbb-8ccc-100000000004',Datum:'2026-11-11T10:00:00Z',Onderwerp:'Debat over woningbouw',Soort:'Commissiedebat',Status:'Gepland'}
+ ]},'Activiteit');
+ const matches=relevantMilestones(rows,'woningbouw kabinet',30,now);
+ assert.equal(matches.length,1);
+ assert.match(matches[0].title,/woningbouw/);
+});
