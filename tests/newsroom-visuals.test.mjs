@@ -36,3 +36,5 @@ test('new visual scripts are available in both deployment and local server',asyn
  assert.match(dev,/coverage-metrics\.js/);
  assert.match(dev,/newsroom-visuals\.js/);
 });
+
+test('topic navigation follows the selected topic and image metadata uses a fresh cache key',async()=>{const ui=await read('newsroom-visuals.js');assert.match(ui,/category=topicGroups\.find/);assert.match(ui,/visual:'20261110v2'/);});
