@@ -100,7 +100,7 @@ function watchPage(){
  const content=document.getElementById('content');if(!content)return;
  content.innerHTML='<div class="ol-watch-page"><header class="ol-watch-hero"><div><span class="ol-watch-eyebrow">TRACK WHAT CHANGES</span><h1>Story Watch</h1>'+
  '<p>Keep track of public-affairs stories and manually check Dutch and European feeds for newly discovered links. No automated alerts or article-level fact-checking.</p></div>'+
- '<div class="ol-watch-buttons"><button class="ol-watch-btn primary" type="button" data-ol-check-all'+(checkingAll?' disabled':'')+'>'+(checkingAll?'Checking…':'↻ Check all watches')+'</button>'+
+ '<div class="ol-watch-buttons"><button class="ol-watch-btn primary" type="button" data-ol-check-all'+(checkingAll?' disabled':'')+'>'+(checkingAll?'Checking…':'↻ Check '+(watchItems.length>8?'first 8':'all')+' watches')+'</button>'+
  '<button class="ol-watch-btn" type="button" data-ol-export>Export watchlist</button></div></header>'+
  '<div class="ol-watch-stat-row"><div class="ol-watch-stat"><strong>'+watchItems.length+'</strong><span>Topics followed</span></div>'+
  '<div class="ol-watch-stat"><strong>'+active+'</strong><span>Topics with new matches</span></div>'+
