@@ -88,6 +88,14 @@ function subpage(){
 function improve(){
  document.body.classList.add('ol-commercial');
  setupNavigation();
+ const nav=document.querySelector('.sidebar nav');
+ if(nav?.classList.contains('ol-nav-ready')){
+  rename(nav.querySelector('[data-view="dashboard"]'),'Explore');
+  rename(nav.querySelector('[data-view="saved"]'),'Saved stories');
+  rename(nav.querySelector('[data-view="methods"]'),'How it works');
+  rename(nav.querySelector('[data-view="claims"]'),'Research questions');
+  rename(nav.querySelector('[data-view="reviews"]'),'Editorial lab');
+ }
  if(state.view==='dashboard')dashboard();else subpage();
  const crumb=document.getElementById('breadcrumb');
  const names={dashboard:'Explore',publishers:'Publishers',saved:'Saved stories',claims:'Research questions',reviews:'Editorial lab',methods:'How it works'};
