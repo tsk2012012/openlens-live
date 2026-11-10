@@ -105,6 +105,8 @@ export function safePublisherImage(raw,articleUrl){
   const resolved=new URL(raw,articleUrl);
   if(resolved.protocol!=='https:'||!resolved.hostname.includes('.')||resolved.username||resolved.password||resolved.port&&resolved.port!=='443')return null;
   if(isIP(resolved.hostname)||/(^|\.)(localhost|local|internal|test|invalid)$/i.test(resolved.hostname))return null;
+  if(resolved.href.replace(/\/$/,'')===new URL(articleUrl).href.replace(/\/$/,''))return null;
+  if(/\/(?:consent|privacy-gate|privacygate)(?:\/|\?|$)/i.test(resolved.pathname)||/(^|\.)(?:myprivacy|consent)\.dpgmedia\.nl$/i.test(resolved.hostname))return null;
   return resolved.href;
  }catch{return null}
 }
