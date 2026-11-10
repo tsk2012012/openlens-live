@@ -6,7 +6,7 @@ test('persistent dark-mode toggle and topic hierarchy are accessible',async()=>{
  const ui=await read('newsroom-visuals.js');
  assert.match(ui,/openlens\.display\.theme\.v1/);
  assert.match(ui,/data-ol-theme-toggle/);
- assert.match(ui,/data-ol-theme="dark"/);
+ assert.match(ui,/olTheme=theme/);
  assert.match(ui,/aria-pressed/);
  for(const group of ['Uitgelicht','Nederland','Europese Unie','Economie & beleid','Samenleving','Internationaal'])assert.ok(ui.includes(group));
  assert.match(ui,/dispatchEvent\(new Event\('change'/);
