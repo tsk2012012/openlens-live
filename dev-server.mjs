@@ -2,7 +2,7 @@ import {createServer} from 'node:http';
 import {readFile} from 'node:fs/promises';
 import news from './api/news.js';
 import preview from './api/article-preview.js';
-const assets=new Map([['/','index.html'],['/index.html','index.html'],['/article-preview.js','article-preview.js'],['/bias-extension.js','bias-extension.js'],['/layout-redesign.js','layout-redesign.js'],['/source-audit.js','source-audit.js'],['/favicon.svg','favicon.svg'],['/publisher-directory.js','publisher-directory.js'],['/product-shell.js','product-shell.js'],['/editorial-review-core.js','editorial-review-core.js'],['/editorial-review.js','editorial-review.js']]);
+const assets=new Map([['/','index.html'],['/index.html','index.html'],['/article-preview.js','article-preview.js'],['/bias-extension.js','bias-extension.js'],['/layout-redesign.js','layout-redesign.js'],['/source-audit.js','source-audit.js'],['/favicon.svg','favicon.svg'],['/publisher-directory.js','publisher-directory.js'],['/product-shell.js','product-shell.js'],['/editorial-home.js','editorial-home.js'],['/editorial-review-core.js','editorial-review-core.js'],['/editorial-review.js','editorial-review.js']]);
 createServer(async(req,res)=>{
  try{
   const u=new URL(req.url||'/','http://localhost');
