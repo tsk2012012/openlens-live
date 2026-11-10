@@ -42,3 +42,25 @@ test('browser and server assets are distinct',async()=>{
  assert.match(server,/node:dns\/promises/);
  assert.match(dev,/source-audit\.js/);
 });
+
+test('Dutch public-affairs publishers and official primary sources are correctly typed',()=>{
+ const expected=[
+ ['Rijksoverheid.nl','Government / legislature'],
+ ['Centraal Bureau voor de Statistiek | CBS','Government / legislature'],
+ ['Algemene Rekenkamer','Government / legislature'],
+ ['De Correspondent','News outlet / publisher'],
+ ['Follow the Money - Platform voor onderzoeksjournalistiek','News outlet / publisher'],
+ ['Binnenlands Bestuur','Trade / specialty publication'],
+ ['De Limburger','Local / regional news'],
+ ['EUobserver','News outlet / publisher'],
+ ['Brusselse Nieuwe','News outlet / publisher'],
+ ['Headliner.nl','News aggregator / portal']
+ ];
+ for(const [name,category] of expected){
+  const result=audit.lookup(name);
+  assert.equal(result.type,category,name);
+  assert.equal(result.rating,null,name);
+ }
+ assert.equal(audit.lookup('Rijksoverheid.nl').politicallyAssessable,false);
+ assert.equal(audit.lookup('Headliner.nl').politicallyAssessable,false);
+});

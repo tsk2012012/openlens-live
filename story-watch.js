@@ -25,7 +25,7 @@ function newWatch(title,query,topic,initial=[]){
  if(!validQuery(fixed)){toast('Use at least two specific keywords for Story Watch.');return null}
  const name=short(title,180);
  if(name.length<4){toast('Give the story a descriptive name.');return null}
- if(watchItems.some(w=>w.title.toLocaleLowerCase()===name.toLocaleLowerCase())){toast('This issue is already on Story Watch.');return null}
+ if(watchItems.some(w=>w.title.toLocaleLowerCase()===name.toLocaleLowerCase())){toast('This issue is already on Story Watch.');return find(watchItems.find(w=>w.title.toLocaleLowerCase()===name.toLocaleLowerCase()).id)}
  if(watchItems.length>=LIMIT){toast('Story Watch has reached its 24-item limit. Remove a watch before adding another.');return null}
  const seen=[...new Set(initial.filter(x=>safeUrl(x)).map(x=>safeUrl(x)))].slice(0,120);
  const w={id:uid(),title:name,query:fixed,topic:short(topic||'Public affairs',45),createdAt:new Date().toISOString(),
