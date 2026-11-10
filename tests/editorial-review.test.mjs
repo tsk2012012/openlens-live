@@ -45,3 +45,18 @@ test('imports reject unsupported payloads and do not duplicate entries',()=>{
  assert.equal(data.ok,true);assert.equal(data.additions.length,1);assert.equal(data.rejected.length,1);
  assert.equal(c.parseImport({version:2,evidence:[]},[]).ok,false);
 });
+
+test('editorial review interface is accessible and not linked into independent ratings',async()=>{
+ const page=await readFile(new URL('../index.html',import.meta.url),'utf8');
+ const ui=await readFile(new URL('../editorial-review.js',import.meta.url),'utf8');
+ const server=await readFile(new URL('../dev-server.mjs',import.meta.url),'utf8');
+ const bias=await readFile(new URL('../bias-extension.js',import.meta.url),'utf8');
+ assert.match(page,/editorial-review-core\.js\?v=/);
+ assert.match(page,/editorial-review\.js\?v=/);
+ assert.match(server,/editorial-review\.js/);
+ assert.match(ui,/Editorial review lab/);
+ assert.match(ui,/localStorage/);
+ assert.match(ui,/Private working hypothesis|private working hypothesis/);
+ assert.match(bias,/OpenLensPublisherRatingLookup/);
+ assert.doesNotMatch(ui,/window\.OpenLensPublisherRatingLookup\s*=/);
+});

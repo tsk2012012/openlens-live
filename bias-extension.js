@@ -78,6 +78,7 @@
     if(institutionalSources[key])return {rating:'Other source',confidence:'Not applicable',source:null,reason:institutionalSources[key]};
     return {rating:'Unrated',confidence:'Not assessed',source:null};
   };
+  window.OpenLensPublisherRatingLookup=Object.freeze(rated);
   const groupMatches=r=>biasFilter==='all'||(biasFilter==='left'&&['Left','Lean Left'].includes(r))||(biasFilter==='right'&&['Right','Lean Right'].includes(r))||(biasFilter==='center'&&r==='Center')||(biasFilter==='unrated'&&r==='Unrated')||(biasFilter==='other'&&r==='Other source');
   const uniqueSources=articles=>[...new Set(articles.map(a=>sourceInfo(a).name))];
   const counts=articles=>{const out=Object.fromEntries(buckets.map(n=>[n,0]));uniqueSources(articles).forEach(n=>out[rated(n).rating]++);return out};

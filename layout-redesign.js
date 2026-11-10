@@ -10,7 +10,7 @@
  let activeTab='coverage',lastSelected=null,advancedOpen=false;
  const tabMap=[['coverage','Coverage'],['perspectives','Perspectives'],['evidence','Evidence'],['timeline','Timeline & claims']];
  function updateLabels(){
-  const names={dashboard:'Explore',saved:'Saved',claims:'Claims',methods:'How it works'};
+  const names={dashboard:'Explore',saved:'Saved',claims:'Claims',reviews:'Editorial reviews',methods:'How it works'};
   document.querySelectorAll('.sidebar [data-view]').forEach(btn=>{
     const v=btn.dataset.view, label=names[v];
     if(!label)return;
