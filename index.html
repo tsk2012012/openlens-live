@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0c7769">
-<meta name="description" content="OpenLens — a transparent, evidence-aware news comparison dashboard.">
-<title>OpenLens — Look beyond one headline</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='17' fill='%232b4fd7'/%3E%3Cpath d='M13 32c10-16 28-16 38 0-10 16-28 16-38 0Z' stroke='white' stroke-width='4' fill='none'/%3E%3Ccircle cx='32' cy='32' r='8' fill='white'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#17313D">
+<meta name="description" content="Compare how publishers cover news stories, explore source context, and read original reporting with OpenLens.">
+<title>OpenLens | Compare news coverage</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20261110pro">
 <style>
 :root{color-scheme:light;--ink:#17223a;--ink2:#35435c;--muted:#6b7790;--line:#e6e9f0;--paper:#ffffff;--canvas:#f7f8fb;--blue:#3458dc;--blue2:#eaf0ff;--accent:#6c82c4;--green:#1b8063;--red:#bd4f51;--amber:#ad7a21;--radius:14px;--shadow:0 5px 20px rgba(18,36,71,.035);font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--canvas);color:var(--ink);font-size:14px;line-height:1.5}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid #9aafff;outline-offset:2px}.hidden{display:none!important}
@@ -22,9 +22,10 @@
 </style>
 </head>
 <body>
+<a class="ol-skip" href="#content">Skip to content</a>
 <div class="app">
   <aside class="sidebar">
-    <div class="brand"><span class="brandmark">◎</span> OpenLens<span class="small">BETA</span></div>
+    <div class="brand"><img class="ol-brand-logo" src="/favicon.svg" alt="" aria-hidden="true" width="35" height="35"> OpenLens <span class="small">BETA</span></div>
     <nav aria-label="Main navigation">
       <div class="menu-label">WORKSPACE</div>
       <button class="nav-btn active" data-view="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="1"/><rect x="13" y="10" width="8" height="11" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/></svg> Overview</button>
@@ -146,5 +147,7 @@ init();
 <script src="layout-redesign.js?v=20261110topics"></script>
 <script src="editorial-review-core.js?v=20261110review"></script>
 <script src="editorial-review.js?v=20261110review"></script>
+<script src="publisher-directory.js?v=20261110pro"></script>
+<script src="product-shell.js?v=20261110pro"></script>
 </body>
 </html>

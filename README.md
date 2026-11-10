@@ -93,3 +93,9 @@ Choose **Editorial reviews** in the main navigation. The review queue lists curr
 ## Original publisher links and source-backed article previews
 
 When a reader opens a Google News RSS article, the server attempts to resolve its original publisher link using Google News's undocumented Fbv4je redirect metadata protocol. Resolution happens on demand only, not across the whole feed. The server validates public HTTPS publisher URLs before loading public article HTML, sets request timeouts and size limits, and never bypasses paywalls. Where accessible it shows the publisher's description and/or a short extract from the article lead, each labeled by provenance; these are not independent AI-generated full-article summaries or fact checks. If Google changes the redirect format, rate-limits the service, or the publisher blocks access, the app keeps the headline and Google News fallback link without inventing an article summary.
+
+## Product navigation and favicon refresh
+
+The commercial-style product shell introduces a scalable SVG favicon, matching logo, clearer typography and a focused main workflow. The primary navigation is Explore, Publishers, Saved stories and How it works. The old Claims tool is now named Research questions, and the manual Editorial Reviews tool is now Editorial lab; both remain accessible under Advanced research, without removing saved local data. Neither feature provides automatic fact-checking or an independent published publisher rating.
+
+The publisher directory shows source categories and externally attributed ratings for sources currently in the feed. Unrated never means Center, and government, academic, NGO and other non-news sources are categorized separately. The directory is not an exhaustive dataset or an article accuracy score.

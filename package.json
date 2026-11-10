@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "node dev-server.mjs",
     "start": "node dev-server.mjs",
-    "check": "node --check editorial-review-core.js && node --check editorial-review.js && node --check source-audit.js && node --check article-preview.js && node --check bias-extension.js && node --check layout-redesign.js && node --check api/news.js && node --check api/article-preview.js && node --check dev-server.mjs && node --test",
+    "check": "node --check product-shell.js && node --check publisher-directory.js && node --check editorial-review-core.js && node --check editorial-review.js && node --check source-audit.js && node --check article-preview.js && node --check bias-extension.js && node --check layout-redesign.js && node --check api/news.js && node --check api/article-preview.js && node --check dev-server.mjs && node --test",
     "test": "node --test"
   },
   "engines": {
