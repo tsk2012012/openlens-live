@@ -6,7 +6,10 @@
   "description": "Source-transparent news comparison dashboard",
   "scripts": {
     "dev": "node dev-server.mjs",
-    "start": "node dev-server.mjs"
+    "start": "node dev-server.mjs",
+    "check": "node --check article-preview.js && node --check bias-extension.js && node --check layout-redesign.js && node --check api/news.js && node --check api/article-preview.js && node --check dev-server.mjs"
   },
-  "engines": { "node": ">=20" }
+  "engines": {
+    "node": ">=20"
+  }
 }

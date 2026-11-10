@@ -53,3 +53,15 @@ A full Ground News-equivalent would need rights-cleared article ingestion, durab
 - [Ad Fontes Media](https://adfontesmedia.com/)
 
 OpenLens is an independently built prototype, not affiliated with Ground News or any publisher.
+
+## Synchronized production files (November 2026)
+
+The current Vercel design is also in this repository: index.html, bias-extension.js, article-preview.js, and layout-redesign.js. Do not confuse article-preview.js (browser UI) with api/article-preview.js (Node serverless handler). Both are essential.
+
+The ivory and teal layout offers compact navigation, collapsible filters and story-level Coverage, Perspectives, Evidence, Timeline tabs. Source political-leaning labels retain their attributed blue-to-red legend. Unrated and institutional sources are separate.
+
+The news API merges a general Google News RSS sample with two explicitly supplemental right-publisher discovery searches for US/English editions. Publisher proportions are not representative of the news ecosystem. Headlines are not a verified full-article omission audit.
+
+Article previews show the headline immediately. Google News aggregation links do not provide original publisher text. Direct publisher links may provide a description or short lead; these are not complete AI summaries.
+
+Use npm run check before pushing. Keep API handlers and browser scripts together, so future deployments do not override features.
