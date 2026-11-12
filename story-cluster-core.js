@@ -87,7 +87,9 @@ const NON_PEOPLE=new Set([
  'fairness act','north sea','middle east','western europe','european council',
  'house representatives','social media','digital services','european central',
  'state department','commission proposes','nato summit','world economic',
- 'european investment','international criminal'
+ 'european investment','international criminal','tweede kamer','eerste kamer',
+ 'europese commissie','europees parlement','change conference','antalya turkey',
+ 'photo reuters','press conference','news agency','climate summit'
 ]);
 const PERSON_CONTEXT=new Set((
  'former united secretary minister president prime climate european commission digital first'
