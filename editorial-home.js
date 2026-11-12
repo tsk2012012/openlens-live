@@ -111,6 +111,7 @@ function closeStory(){
  openStoryId=null;state.expanded=false;
  render();focusPage('#ol-newsroom-heading');
 }
+window.OpenLensCloseStory=closeStory;
 document.addEventListener('click',e=>{
  const story=e.target.closest?.('[data-ol-open-story]');
  if(story){e.preventDefault();e.stopImmediatePropagation();openStory(story.dataset.olOpenStory);return}
