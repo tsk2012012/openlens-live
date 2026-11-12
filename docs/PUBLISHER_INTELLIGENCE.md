@@ -35,6 +35,10 @@ De persoonlijke live-scanknop vraagt de bestaande `/api/news` om nieuwsbronnen, 
 
 De resultaten zijn **onvolledig en afhankelijk van beschikbaarheid, zoekqueries, feedkwaliteit en indexeringsmomenten**. Een ontbrekende uitgever in de steekproef betekent niet dat een uitgever een gebeurtenis niet heeft behandeld.
 
+## Verdeling van eigenaars in de steekproef
+
+De pagina bevat een afzonderlijk eigendomsoverzicht: aantallen **waargenomen uitgeversmerken** per gedocumenteerde mediagroep. Het laat ook expliciet zien hoeveel waargenomen uitgevers geen gecontroleerde eigenaar hebben. Het is géén inschatting van lezersbereik, marktaandeel, ideologische invloed of het aandeel verhalen. Merken onder één mediagroep kunnen redactioneel zelfstandig blijven.
+
 ## Links-rechtsdekking
 
 De nieuwskaarten gebruiken een gecontroleerde deler:
