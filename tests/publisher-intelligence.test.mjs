@@ -8,7 +8,7 @@ const code=await readFile(new URL('../publisher-profiles.js',import.meta.url),'u
 
 test('all reviewed identities are unique, sourced, and explicitly unscored',()=>{
  assert.ok(json.profiles.length>=35);
- const ids=new Set(),keys=new Set(),domains=new Set();
+ const ids=new Set(),keys=new Map(),domains=new Set();
  for(const p of json.profiles){
   assert.ok(p.name&&p.id&&p.country&&p.language);
   assert.equal(p.politicalRating,null,'ownership must not imply a political rating');
@@ -17,7 +17,7 @@ test('all reviewed identities are unique, sourced, and explicitly unscored',()=>
   assert.ok(!ids.has(p.id),'duplicate publisher ID '+p.id);ids.add(p.id);
   for(const a of [p.name,...p.aliases]){
    const k=a.normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
-   assert.ok(!keys.has(k),'duplicate publisher alias '+k);keys.add(k);
+   assert.ok(!keys.has(k)||keys.get(k)===p.id,'ambiguous publisher alias '+k);keys.set(k,p.id);
   }
   for(const domain of p.domains){
    assert.ok(!domains.has(domain),'domain collision '+domain);domains.add(domain);
