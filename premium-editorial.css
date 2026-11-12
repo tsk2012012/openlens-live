@@ -262,6 +262,8 @@ html[data-ol-theme=dark] .ol-sample-disclosure{background:#1b2929!important;bord
 html[data-ol-theme=dark] .ol-dir-row:hover{background:#253833!important}
 /* Small screens keep editorial drama without stealing content space */
 @media(max-width:1100px){
+ .ol-newsroom-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ol-feed-card.ol-feed-featured{grid-column:span 2!important}
  body.ol-refresh .content{padding:25px 24px 80px!important}
  .ol-unified-inner{gap:9px}
  .ol-unified-nav button{padding:0 10px;font-size:9px}
