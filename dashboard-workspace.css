@@ -4,7 +4,7 @@
 .ol-refresh .sidebar{display:none!important}
 .ol-refresh .workspace{min-width:0;width:100%}
 .ol-refresh .topbar{display:none!important}
-.ol-refresh .content{width:100%;max-width:1580px;margin:0 auto;padding:26px 32px 76px}
+.ol-refresh .content{width:100%;max-width:1580px!important;margin:0 auto;padding:26px 32px 76px!important}
 .ol-unified-header{position:sticky;top:0;z-index:110;background:var(--paper,#fff);border-bottom:1px solid var(--line,#e0e8e3);box-shadow:0 3px 20px rgba(18,38,34,.04)}
 .ol-unified-inner{max-width:1650px;padding:0 30px;min-height:70px;margin:0 auto;display:flex;align-items:center;gap:18px}
 .ol-unified-brand{display:inline-flex;align-items:center;flex-shrink:0;gap:10px;text-decoration:none;color:var(--ink,#18323d);font-weight:850;font-size:20px;letter-spacing:-.65px}
@@ -52,7 +52,7 @@ html[data-ol-theme=dark] .ol-workspace-buttons button{background:#294f40;border-
 html[data-ol-theme=dark] .ol-workspace-research .ol-workspace-items button{border-color:#365e4d;color:#dcf4e3}
 @media(max-width:1120px){.ol-unified-inner{gap:12px;padding:0 18px}.ol-unified-nav button{padding:9px 8px;font-size:11px}.ol-unified-status{display:none}.ol-workspace-tools{grid-template-columns:repeat(2,minmax(0,1fr))}.ol-workspace-research{grid-column:1/-1}}
 @media(max-width:760px){
-.ol-refresh .content{padding:19px 15px 65px}
+.ol-refresh .content{padding:19px 15px 65px!important}
 .ol-unified-inner{padding:10px 14px 8px;min-height:0;gap:8px;display:flex;flex-wrap:wrap;justify-content:space-between}
 .ol-unified-brand{font-size:18px}
 .ol-unified-brand img{width:30px;height:30px}
