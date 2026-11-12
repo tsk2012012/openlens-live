@@ -72,6 +72,24 @@ function bar(m,extra=''){
    '<div class="ol-coverage-caveat">'+level+'. De balk toont broncategorieën, <strong>geen links-rechtspercentages</strong>.</div>'+
    (named?'<div class="ol-source-types">'+named+'</div>':'')+'</div>';
  }
+ if(n<3||n/Math.max(1,all)<0.5){
+  // With too few assessed publishers, a 100% leaning share would falsely imply certainty.
+  const total=Math.max(1,all);
+  const sizes=[
+   ['left',c.left],['center',c.center],['right',c.right],
+   ['unrated',c.unrated],['other',c.other]
+  ];
+  return '<div class="ol-coverage-unit ol-coverage-insufficient '+extra+
+   '" aria-label="Onvoldoende classificaties voor verantwoorde links-rechtspercentages">'+
+   '<div class="ol-coverage-key"><span>Politieke bronverdeling · onvoldoende gegevens</span><span>'+n+' / '+all+' ingeschaald</span></div>'+
+   '<div class="ol-coverage-stripe" role="img" aria-label="Bekende bronnen links '+c.left+', midden '+c.center+
+   ', rechts '+c.right+', niet beoordeeld '+c.unrated+', overige '+c.other+'">'+
+   sizes.filter(x=>x[1]>0).map(([k,v])=>'<span class="ol-coverage-segment '+k+'" style="width:'+
+   (v*100/total)+'%"></span>').join('')+'</div>'+
+   '<div class="ol-coverage-key"><span>Links '+c.left+' · Midden '+c.center+' · Rechts '+c.right+'</span>'+
+   '<span>Onbekend '+c.unrated+' · Overig '+c.other+'</span></div>'+
+   '<div class="ol-coverage-caveat"><strong>Geen procentuele politieke conclusie.</strong> Er zijn minder dan drie beoordeelde uitgevers of minder dan de helft van de bronnen is ingeschaald. De balk toont aantallen ten opzichte van alle gevonden bronnen, niet de politieke inhoud van artikelen.</div></div>';
+ }
  const description='Links '+s.left+'%, midden '+s.center+'%, rechts '+s.right+'% van '+n+
   ' geclassificeerde uitgevers, niet van alle '+all+' bronnen of artikelen';
  return '<div class="ol-coverage-unit '+extra+'" aria-label="Politieke bronverdeling in deze steekproef">'+
