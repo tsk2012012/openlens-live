@@ -20,7 +20,7 @@ function ensureHeader(){
    '<button type="button" data-view="blindspots">Blinde vlekken</button>'+
    '<button type="button" data-ol-workspace-jump>Mijn werkruimte</button>'+
   '</nav>'+
-  '<div class="ol-unified-actions"><span class="ol-unified-status"></span>'+
+  '<div class="ol-unified-actions"><span class="ol-unified-status"></span><span class="ol-archive-status" role="status" aria-live="polite" title="Status van het historische nieuwsarchief">Archief controleren…</span>'+
    '<button type="button" class="ol-theme-toggle ol-top-theme" data-ol-theme-toggle aria-label="Wissel licht/donker">☾ Donker</button>'+
    '<details class="ol-unified-more"><summary>Meer ▾</summary>'+
     '<div class="ol-unified-menu">'+
@@ -42,6 +42,24 @@ function updateHeader(){
  if(status){status.textContent=state.mode==='live'?'Actuele nieuwssteekproef':state.mode==='cached'?'Bewaarde feed':'Demonstratiegegevens';status.classList.toggle('demo',state.mode==='demo')}
  const theme=header.querySelector('.ol-top-theme');
  if(theme){const dark=document.documentElement.dataset.olTheme==='dark';theme.innerHTML=dark?'☀︎ Licht':'☾ Donker';theme.setAttribute('aria-pressed',String(dark))}
+}
+let archiveCheckedAt=0,archiveFetching=false;
+async function updateArchiveStatus(){
+ const el=document.querySelector('.ol-archive-status');
+ if(!el||archiveFetching||Date.now()-archiveCheckedAt<300000)return;
+ archiveCheckedAt=Date.now();archiveFetching=true;
+ try{
+  const r=await fetch('/api/storage-status',{cache:'no-store'});
+  const info=await r.json();
+  const fmt=n=>Number(n||0).toLocaleString('nl-NL');
+  const label=info.state==='collecting'?'Archief · '+fmt(info.articles)+' artikelen / '+fmt(info.publishers)+' uitgevers':
+   info.state==='waiting_for_first_ingest'?'Archief verbonden · eerste import volgt':
+   info.state==='not_connected'?'Archief niet gekoppeld':'Archiefstatus tijdelijk onbekend';
+  el.textContent=label;el.dataset.state=info.state||'unavailable';
+  el.title=info.lastSuccess?'Laatste geslaagde import: '+new Date(info.lastSuccess).toLocaleString('nl-NL'):'Nog geen succesvolle database-import bevestigd';
+ }catch{
+  el.textContent='Archiefstatus niet beschikbaar';el.dataset.state='unavailable';
+ }finally{archiveFetching=false}
 }
 function cardHeader(title,count,description){
  return '<div class="ol-workspace-card-head"><div><h2>'+title+'</h2><p>'+description+'</p></div><span class="ol-workspace-count">'+count+'</span></div>';
@@ -72,7 +90,7 @@ function injectDashboard(){
  hero.insertAdjacentHTML('afterend',overview());
 }
 const previous=render;
-render=function(){previous();ensureHeader();updateHeader();injectDashboard()};
+render=function(){previous();ensureHeader();updateHeader();injectDashboard();updateArchiveStatus();updateArchiveStatus()};
 document.addEventListener('click',e=>{
  if(e.target.closest('[data-ol-workspace-jump]')){
   e.preventDefault();e.stopImmediatePropagation();
