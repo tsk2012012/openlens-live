@@ -1,0 +1,666 @@
+{
+  "schema": 1,
+  "reviewedAt": "2026-11-12",
+  "purpose": "Handmatig nagekeken merk- en eigendomskoppelingen met publiceerbare bronlinks. Politieke ratings worden niet automatisch afgeleid uit eigendom.",
+  "sources": {
+    "dpg": "https://privacy.dpgmedia.nl/nl/document/brands-permissions",
+    "mediahuis": "https://www.mediahuis.com/nl/merken",
+    "nos": "https://www.rijksoverheid.nl/documenten/vraag-en-antwoord/media-en-publieke-omroep/welke-omroepen",
+    "fd": "https://fdmg.nl/over-ons/",
+    "ftm": "https://www.ftm.nl/over-ftm",
+    "talpa": "https://media-ownership.eu/2025-edition/country-reports/netherlands/",
+    "politico": "https://www.axelspringer.com/en/ax-press-release/axel-springer-completes-acquisition-of-politico",
+    "dpgNl": "https://www.dpgmediagroup.com/nl-NL/over-dpg-media/redactiestatuten"
+  },
+  "profiles": [
+    {
+      "id": "ad",
+      "name": "AD",
+      "domains": [
+        "ad.nl"
+      ],
+      "aliases": [
+        "AD.nl",
+        "Algemeen Dagblad"
+      ],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "DPG Media",
+      "ownershipSource": "https://privacy.dpgmedia.nl/nl/document/brands-permissions",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "de-volkskrant",
+      "name": "de Volkskrant",
+      "domains": [
+        "volkskrant.nl"
+      ],
+      "aliases": [
+        "Volkskrant"
+      ],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "DPG Media",
+      "ownershipSource": "https://privacy.dpgmedia.nl/nl/document/brands-permissions",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "trouw",
+      "name": "Trouw",
+      "domains": [
+        "trouw.nl"
+      ],
+      "aliases": [],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "DPG Media",
+      "ownershipSource": "https://privacy.dpgmedia.nl/nl/document/brands-permissions",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "het-parool",
+      "name": "Het Parool",
+      "domains": [
+        "parool.nl"
+      ],
+      "aliases": [
+        "Parool"
+      ],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "DPG Media",
+      "ownershipSource": "https://privacy.dpgmedia.nl/nl/document/brands-permissions",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "nu-nl",
+      "name": "NU.nl",
+      "domains": [
+        "nu.nl"
+      ],
+      "aliases": [
+        "NU"
+      ],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "DPG Media",
+      "ownershipSource": "https://privacy.dpgmedia.nl/nl/document/brands-permissions",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "rtl-nieuws",
+      "name": "RTL Nieuws",
+      "domains": [
+        "rtlnieuws.nl"
+      ],
+      "aliases": [
+        "RTL News"
+      ],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "DPG Media",
+      "ownershipSource": "https://privacy.dpgmedia.nl/nl/document/brands-permissions",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "de-gelderlander",
+      "name": "De Gelderlander",
+      "domains": [
+        "gelderlander.nl"
+      ],
+      "aliases": [],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "DPG Media",
+      "ownershipSource": "https://privacy.dpgmedia.nl/nl/document/brands-permissions",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "de-stentor",
+      "name": "de Stentor",
+      "domains": [
+        "destentor.nl"
+      ],
+      "aliases": [
+        "De Stentor"
+      ],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "DPG Media",
+      "ownershipSource": "https://privacy.dpgmedia.nl/nl/document/brands-permissions",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "tubantia",
+      "name": "Tubantia",
+      "domains": [
+        "tubantia.nl"
+      ],
+      "aliases": [
+        "Twentsche Courant Tubantia",
+        "De Twentsche Courant Tubantia"
+      ],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "DPG Media",
+      "ownershipSource": "https://privacy.dpgmedia.nl/nl/document/brands-permissions",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "bn-destem",
+      "name": "BN DeStem",
+      "domains": [
+        "bndestem.nl"
+      ],
+      "aliases": [
+        "BN De Stem"
+      ],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "DPG Media",
+      "ownershipSource": "https://privacy.dpgmedia.nl/nl/document/brands-permissions",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "brabants-dagblad",
+      "name": "Brabants Dagblad",
+      "domains": [
+        "bd.nl"
+      ],
+      "aliases": [],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "DPG Media",
+      "ownershipSource": "https://privacy.dpgmedia.nl/nl/document/brands-permissions",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "eindhovens-dagblad",
+      "name": "Eindhovens Dagblad",
+      "domains": [
+        "ed.nl"
+      ],
+      "aliases": [],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "DPG Media",
+      "ownershipSource": "https://privacy.dpgmedia.nl/nl/document/brands-permissions",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "pzc",
+      "name": "PZC",
+      "domains": [
+        "pzc.nl"
+      ],
+      "aliases": [],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "DPG Media",
+      "ownershipSource": "https://privacy.dpgmedia.nl/nl/document/brands-permissions",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "nrc",
+      "name": "NRC",
+      "domains": [
+        "nrc.nl"
+      ],
+      "aliases": [
+        "NRC Handelsblad"
+      ],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "Mediahuis",
+      "ownershipSource": "https://www.mediahuis.com/nl/merken",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "de-telegraaf",
+      "name": "De Telegraaf",
+      "domains": [
+        "telegraaf.nl"
+      ],
+      "aliases": [
+        "Telegraaf"
+      ],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "Mediahuis",
+      "ownershipSource": "https://www.mediahuis.com/nl/merken",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "de-limburger",
+      "name": "De Limburger",
+      "domains": [
+        "limburger.nl"
+      ],
+      "aliases": [],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "Mediahuis",
+      "ownershipSource": "https://www.mediahuis.com/nl/merken",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "dagblad-van-het-noorden",
+      "name": "Dagblad van het Noorden",
+      "domains": [
+        "dvhn.nl"
+      ],
+      "aliases": [
+        "DVHN"
+      ],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "Mediahuis",
+      "ownershipSource": "https://www.mediahuis.com/nl/merken",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "leeuwarder-courant",
+      "name": "Leeuwarder Courant",
+      "domains": [
+        "lc.nl"
+      ],
+      "aliases": [],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "Mediahuis",
+      "ownershipSource": "https://www.mediahuis.com/nl/merken",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "friesch-dagblad",
+      "name": "Friesch Dagblad",
+      "domains": [
+        "frieschdagblad.nl"
+      ],
+      "aliases": [],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "Mediahuis",
+      "ownershipSource": "https://www.mediahuis.com/nl/merken",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "noordhollands-dagblad",
+      "name": "Noordhollands Dagblad",
+      "domains": [
+        "noordhollandsdagblad.nl"
+      ],
+      "aliases": [],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "Mediahuis",
+      "ownershipSource": "https://www.mediahuis.com/nl/merken",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "haarlems-dagblad",
+      "name": "Haarlems Dagblad",
+      "domains": [
+        "haarlemnsdagblad.nl"
+      ],
+      "aliases": [],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "Mediahuis",
+      "ownershipSource": "https://www.mediahuis.com/nl/merken",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "leidsch-dagblad",
+      "name": "Leidsch Dagblad",
+      "domains": [
+        "leidschdagblad.nl"
+      ],
+      "aliases": [],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "Mediahuis",
+      "ownershipSource": "https://www.mediahuis.com/nl/merken",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "ijmuider-courant",
+      "name": "IJmuider Courant",
+      "domains": [
+        "ijmuidercourant.nl"
+      ],
+      "aliases": [],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "Mediahuis",
+      "ownershipSource": "https://www.mediahuis.com/nl/merken",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "de-gooi-en-eemlander",
+      "name": "De Gooi- en Eemlander",
+      "domains": [
+        "gooieneemlander.nl"
+      ],
+      "aliases": [],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "Mediahuis",
+      "ownershipSource": "https://www.mediahuis.com/nl/merken",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "de-standaard",
+      "name": "De Standaard",
+      "domains": [
+        "standaard.be"
+      ],
+      "aliases": [],
+      "country": "BE",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "Mediahuis",
+      "ownershipSource": "https://www.mediahuis.com/nl/merken",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "het-nieuwsblad",
+      "name": "Het Nieuwsblad",
+      "domains": [
+        "nieuwsblad.be"
+      ],
+      "aliases": [],
+      "country": "BE",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "Mediahuis",
+      "ownershipSource": "https://www.mediahuis.com/nl/merken",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "gazet-van-antwerpen",
+      "name": "Gazet van Antwerpen",
+      "domains": [
+        "gva.be"
+      ],
+      "aliases": [],
+      "country": "BE",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "Mediahuis",
+      "ownershipSource": "https://www.mediahuis.com/nl/merken",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "de-morgen",
+      "name": "De Morgen",
+      "domains": [
+        "demorgen.be"
+      ],
+      "aliases": [],
+      "country": "BE",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "DPG Media",
+      "ownershipSource": "https://privacy.dpgmedia.nl/nl/document/brands-permissions",
+      "verifiedAt": "2026-11-12",
+      "note": "Eigendom gecontroleerd via openbaar overzicht van DPG-media-merken; apart raadpleegbaar.",
+      "politicalRating": null
+    },
+    {
+      "id": "het-laatste-nieuws",
+      "name": "Het Laatste Nieuws",
+      "domains": [
+        "hln.be"
+      ],
+      "aliases": [],
+      "country": "BE",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "DPG Media",
+      "ownershipSource": "https://privacy.dpgmedia.nl/nl/document/brands-permissions",
+      "verifiedAt": "2026-11-12",
+      "note": "Eigendom gecontroleerd via openbaar overzicht van DPG-media-merken; apart raadpleegbaar.",
+      "politicalRating": null
+    },
+    {
+      "id": "vtm-nieuws",
+      "name": "VTM Nieuws",
+      "domains": [
+        "vtmnieuws.be"
+      ],
+      "aliases": [],
+      "country": "BE",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "DPG Media",
+      "ownershipSource": "https://privacy.dpgmedia.nl/nl/document/brands-permissions",
+      "verifiedAt": "2026-11-12",
+      "note": "Eigendom gecontroleerd via openbaar overzicht van DPG-media-merken; apart raadpleegbaar.",
+      "politicalRating": null
+    },
+    {
+      "id": "euractiv",
+      "name": "EURACTIV",
+      "domains": [
+        "euractiv.com"
+      ],
+      "aliases": [
+        "EURACTIV Europe",
+        "Euractiv"
+      ],
+      "country": "EU",
+      "language": "en",
+      "type": "vakmedium",
+      "owner": "Mediahuis",
+      "ownershipSource": "https://www.mediahuis.com/nl/merken",
+      "verifiedAt": "2026-11-12",
+      "note": "Europese beleidsjournalistiek.",
+      "politicalRating": null
+    },
+    {
+      "id": "politico-europe",
+      "name": "POLITICO Europe",
+      "domains": [
+        "politico.eu"
+      ],
+      "aliases": [
+        "POLITICO.eu",
+        "POLITICO EU"
+      ],
+      "country": "EU",
+      "language": "en",
+      "type": "vakmedium",
+      "owner": "Axel Springer",
+      "ownershipSource": "https://www.axelspringer.com/en/ax-press-release/axel-springer-completes-acquisition-of-politico",
+      "verifiedAt": "2026-11-12",
+      "note": "Europese politieke en beleidsjournalistiek.",
+      "politicalRating": null
+    },
+    {
+      "id": "het-financieele-dagblad",
+      "name": "Het Financieele Dagblad",
+      "domains": [
+        "fd.nl"
+      ],
+      "aliases": [
+        "FD",
+        "Het FD"
+      ],
+      "country": "NL",
+      "language": "nl",
+      "type": "vakmedium",
+      "owner": "FD Mediagroep (HAL Investments)",
+      "ownershipSource": "https://fdmg.nl/over-ons/",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "bnr-nieuwsradio",
+      "name": "BNR Nieuwsradio",
+      "domains": [
+        "bnr.nl"
+      ],
+      "aliases": [
+        "BNR"
+      ],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "FD Mediagroep (HAL Investments)",
+      "ownershipSource": "https://fdmg.nl/over-ons/",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "nos",
+      "name": "NOS",
+      "domains": [
+        "nos.nl"
+      ],
+      "aliases": [
+        "NOS Nieuws"
+      ],
+      "country": "NL",
+      "language": "nl",
+      "type": "publieke-omroep",
+      "owner": "Nederlandse publieke omroep (taakomroep NOS)",
+      "ownershipSource": "https://www.rijksoverheid.nl/documenten/vraag-en-antwoord/media-en-publieke-omroep/welke-omroepen",
+      "verifiedAt": "2026-11-12",
+      "note": "Publieke financiering is geen links-rechtsoordeel.",
+      "politicalRating": null
+    },
+    {
+      "id": "hart-van-nederland",
+      "name": "Hart van Nederland",
+      "domains": [
+        "hartvannederland.nl"
+      ],
+      "aliases": [],
+      "country": "NL",
+      "language": "nl",
+      "type": "redactie",
+      "owner": "Talpa Network",
+      "ownershipSource": "https://media-ownership.eu/2025-edition/country-reports/netherlands/",
+      "verifiedAt": "2026-11-12",
+      "note": "",
+      "politicalRating": null
+    },
+    {
+      "id": "follow-the-money",
+      "name": "Follow the Money",
+      "domains": [
+        "ftm.nl"
+      ],
+      "aliases": [
+        "FTM"
+      ],
+      "country": "NL",
+      "language": "nl",
+      "type": "onderzoeksjournalistiek",
+      "owner": "FTM Media / ledengefinancierd",
+      "ownershipSource": "https://www.ftm.nl/over-ftm",
+      "verifiedAt": "2026-11-12",
+      "note": "Organisatiestructuur en ledeninkomsten zijn anders dan een politieke beoordelingsscore.",
+      "politicalRating": null
+    },
+    {
+      "id": "de-groene-amsterdammer",
+      "name": "De Groene Amsterdammer",
+      "domains": [
+        "groene.nl"
+      ],
+      "aliases": [
+        "De Groene"
+      ],
+      "country": "NL",
+      "language": "nl",
+      "type": "weekblad",
+      "owner": null,
+      "ownershipSource": "https://media-ownership.eu/2025-edition/country-reports/netherlands/",
+      "verifiedAt": "2026-11-12",
+      "note": "Eigendom is complex; hier geen onbevestigde eindbelanghebbende ingevuld.",
+      "politicalRating": null
+    }
+  ]
+}
