@@ -36,6 +36,12 @@ Koppen worden nu conservatief gegroepeerd via meertalige termen, bekende namen, 
 
 Gedetailleerde methodologie, bronverwijzingen en beperkingen: [docs/PUBLISHER_INTELLIGENCE.md](docs/PUBLISHER_INTELLIGENCE.md).
 
+## Stap 4: Evidence Desk — inhoudelijke signalen met bronverwijzingen
+
+Verhaaldossiers tonen nu een **bron-voor-bron vergelijking** van gedeelde en enkelvoudig aangetroffen signalen in nieuwsheadlines. Met **Vergelijk openbare previews** worden op verzoek beperkte uitgeversbeschrijvingen of toegankelijke leads opgehaald en aan de oorspronkelijke bron gekoppeld. Per bron staat aangegeven of de analyse uitsluitend op de kop of ook op een openbare preview berust. Je kunt een transparant JSON-onderzoeksdossier exporteren.
+
+**Belangrijke grens:** dit is **geen volledige artikelanalyse of factcheck**. Een detail dat alleen in één beschikbare bronkop staat is **geen bewezen weglating** bij andere media. Gegevens worden niet aan de serverdatabase toegevoegd door de previewfunctie. Zie [docs/EVIDENCE_DESK.md](docs/EVIDENCE_DESK.md) voor de methode en de grenzen.
+
 ## Features
 
 - Responsive story dashboard for phone and desktop
