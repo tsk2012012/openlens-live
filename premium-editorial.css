@@ -133,6 +133,10 @@ button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible,s
  background:linear-gradient(0deg,rgba(13,31,29,.42),transparent 50%)!important;z-index:1}
 .ol-feed-card .ol-card-cover::after{width:74px;height:74px;border:1px solid rgba(242,225,181,.40);border-radius:50%;
  box-shadow:0 0 0 18px rgba(251,234,184,.07);left:auto;right:20px;top:24px;opacity:.58;z-index:1}
+.ol-card-cover .ol-image-number{position:absolute;z-index:4;left:18px;top:17px;display:inline-flex;align-items:center;gap:8px;
+ font:500 10px var(--ol-mono);letter-spacing:.08em;color:#f9f0dc;background:rgba(20,38,34,.85);
+ padding:8px 11px;border:1px solid rgba(214,188,142,.55);border-radius:2px;backdrop-filter:blur(5px)}
+.ol-card-cover .ol-image-number::before{content:'';height:7px;width:7px;border:1px solid #dabd8e;border-radius:50%}
 .ol-card-cover .ol-cover-fallback{font-family:var(--ol-serif);font-size:31px;letter-spacing:.03em;color:#e5d6b5}
 .ol-card-cover .ol-cover-caption{z-index:2!important;font-family:var(--ol-mono);font-size:9px!important;letter-spacing:.015em;
  color:#f2f2e9!important}
