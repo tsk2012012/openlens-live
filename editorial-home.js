@@ -13,13 +13,14 @@ const articleDate=s=>{
  const latest=rows.reduce((a,b)=>Date.parse(a.when)>Date.parse(b.when)?a:b);
  return relative(latest.when);
 };
+const regionLabel=s=>({nl:'Nederland',eu:'EU',world:'Wereld'})[s.region]||'Regio onbekend';
 const sources=s=>[...new Set(filteredArticles(s).map(a=>sourceInfo(a).name))];
 const plural=(n,singular,other)=>n+' '+(n===1?singular:other);
 function card(s,i){
  const articles=filteredArticles(s),outlets=sources(s),featured=i===0;
  const title=ESC(s.title),id=ESC(s.id),kind=ESC(s.topic||'News');
  const unique=outlets.slice(0,3).map(ESC).join(' · ');
- const overline=(s.demo?'DEMO · ':'')+kind;
+ const overline=(s.demo?'DEMO · ':'')+regionLabel(s)+' · '+kind;
  return '<article class="ol-feed-card'+(featured?' ol-feed-featured':'')+'">'+
  '<div class="ol-feed-overline"><span class="ol-feed-category">'+overline+'</span><span class="ol-feed-time">'+ESC(articleDate(s))+'</span></div>'+
  '<button type="button" class="ol-feed-title" data-ol-open-story="'+id+'" aria-label="Compare coverage: '+title+'">'+title+'</button>'+
@@ -40,7 +41,7 @@ function browse(){
  (state.mode==='live'?'Live headline sample':state.mode==='cached'?'Saved headline sample':'Illustrative demo')+'</span>'+
  '<button type="button" data-action="refresh" class="btn primary">'+(state.loading?'Refreshing…':'↻ Refresh news')+'</button></div></header>'+
  '<section aria-label="Explore news topics">'+filterSection()+'</section>'+
- '<div class="ol-newsroom-toolbar"><div><h2>Latest coverage</h2><p>Open a story for deeper comparison. Coverage matches have not been independently verified.</p></div>'+
+ '<div class="ol-newsroom-toolbar"><div><h2>Nieuwste headlines eerst</h2><p>Gesorteerd op nieuwste beschikbare publicatie-, feed- of indexdatum. Dit is niet altijd de oorspronkelijke publicatietijd.</p></div>'+
  '<span class="ol-newsroom-count">'+plural(stories.length,'story','stories')+' · '+plural(count,'publisher','publishers')+'</span></div>'+
  '<section class="ol-newsroom-grid" aria-label="News stories">'+
  (stories.length?stories.map(card).join(''):
@@ -50,7 +51,7 @@ function browse(){
 }
 function report(s){
  const articles=filteredArticles(s),outlets=sources(s);
- const head=articles.filter(x=>safeURL(x.url)).slice(0,3).map(a=>
+ const head=[...articles].sort((a,b)=>newsDate(b)-newsDate(a)).filter(x=>safeURL(x.url)).slice(0,3).map(a=>
  '<div class="ol-reader-headline"><small>'+ESC(sourceInfo(a).name)+' · '+ESC(a.kind||'Reporting')+'</small>'+
  link(a.url,ESC(a.title))+'</div>').join('');
  const subtitle=s.demo?'This is an illustrative story. Refresh for live publisher reporting.':
