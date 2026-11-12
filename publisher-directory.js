@@ -137,6 +137,38 @@ const colorStyle=document.createElement('style');
 colorStyle.textContent='.ol-dir-badge.ol-dir-left{background:#dfeaff!important;color:#204b9e!important;border-left:4px solid #3c70d6}.ol-dir-badge.ol-dir-center{background:#e5ede7!important;color:#355747!important;border-left:4px solid #6b9b83}.ol-dir-badge.ol-dir-right{background:#ffe4e3!important;color:#963b3a!important;border-left:4px solid #d45e5c}.ol-dir-badge.ol-dir-other{background:#edf0f1!important;color:#455b61!important;border-left:4px solid #95a2a5}.ol-dir-legend{display:flex;flex-wrap:wrap;gap:9px;margin:12px 0;font-size:11px;align-items:center}.ol-dir-legend span{display:inline-flex;gap:6px;align-items:center}.ol-dir-legend i{height:10px;width:10px;border-radius:3px;display:inline-block}.ol-dir-legend .left{background:#3c70d6}.ol-dir-legend .center{background:#6b9b83}.ol-dir-legend .right{background:#d45e5c}.ol-dir-legend .other{background:#95a2a5}';
 document.head.append(colorStyle);
 
+
+function ownershipSnapshot(list,observed){
+ if(ui.archive.state!=='ready')return '';
+ const rows=list.filter(m=>(observed.get(normal(m.name))?.articles||0)>0);
+ const total=rows.length;
+ if(!total)return '';
+ const groups=new Map();
+ for(const item of rows){
+  const owner=item.ownershipVerified?item.owner:'Eigendom onbekend';
+  groups.set(owner,(groups.get(owner)||0)+1);
+ }
+ const unknown=groups.get('Eigendom onbekend')||0;
+ groups.delete('Eigendom onbekend');
+ const sorted=[...groups.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'nl'));
+ const top=sorted.slice(0,6);
+ const other=sorted.slice(6).reduce((n,item)=>n+item[1],0);
+ if(other)top.push(['Overige geverifieerde groepen',other]);
+ top.push(['Eigendom onbekend',unknown]);
+ const bar=top.filter(([name,count])=>count>0).map(([name,count])=>
+  '<div class="ol-owner-row"><div class="ol-owner-row-title"><strong>'+esc(name)+'</strong><span>'+
+  count+' van '+total+' waargenomen uitgevers</span></div>'+
+  '<div class="ol-owner-track"><span style="width:'+(count/total*100).toFixed(1)+
+  '%" class="'+(name==='Eigendom onbekend'?'unknown':'known')+'"></span></div></div>'
+ ).join('');
+ return '<section class="ol-owner-snapshot"><div class="ol-owner-snapshot-head"><div>'+
+ '<span class="ol-dir-kicker">EIGENDOMSOVERZICHT / STEEKPROEF</span>'+
+ '<h2>Wie beheert de gevonden nieuwsmerken?</h2></div>'+
+ '<span>'+total+' uitgevers in het archief</span></div>'+
+ '<p>Aantal unieke nieuwsmerken per geverifieerde mediagroep, niet het aandeel in lezers, politieke invloed of totale nieuwsproductie.</p>'+
+ '<div class="ol-owner-list">'+bar+'</div>'+
+ '<small>Onbekend blijft zichtbaar. Een gedeelde mediagroep betekent niet dat verschillende redacties dezelfde inhoud of politieke opvatting hebben.</small></section>';
+}
 function markup(){
  const list=publishers(),rated=list.filter(x=>x.rating).length,
   owners=list.filter(x=>x.ownershipVerified).length,unrated=list.length-rated;
@@ -186,6 +218,7 @@ function markup(){
   '<button class="ol-dir-button" type="button" id="ol-dir-refresh" '+(ui.loading?'disabled':'')+'>'+
   (ui.loading?'Bronnen ophalen…':'↻ Controleer actuele feeds')+'</button></div>'+
  (ui.error?'<p class="ol-dir-foot">'+esc(ui.error)+'</p>':'')+
+ ownershipSnapshot(list,observed)+
  surveyBar(list)+
  '<p class="ol-dir-foot">De verdeling hierboven telt <strong>waargenomen</strong> uitgevers, inclusief onbekende oriëntaties. Onvoldoende bronclassificatie blijft expliciet zichtbaar. Ontbrekende media zijn geen bewezen blinde vlekken.</p>'+
  '<section class="ol-dir-panel"><div class="ol-dir-toolbar"><div><h2>Uitgeversregister</h2><p>Zoek op merk, eigendomsgroep of soort redactie.</p></div>'+
