@@ -20,9 +20,23 @@ async function loadEvidence(){
  }catch(e){ui.error='Historische onderzoeksdatabase is nog niet beschikbaar';if(state.view==='publishers')markup()}
 }
 function evidenceStats(){
- const counts=new Map();
- for(const a of ui.evidence.articles||[]){const k=normal(a.publisher);if(k)counts.set(k,(counts.get(k)||0)+1)}
- return counts;
+ const stats=new Map();
+ for(const a of ui.evidence.articles||[]){
+  const k=normal(a.publisher);if(!k)continue;
+  const d=stats.get(k)||{urls:new Set(),topics:new Set(),dates:[]};
+  if(a.url)d.urls.add(a.url);if(a.topic)d.topics.add(a.topic);
+  if(a.date&&Number.isFinite(Date.parse(a.date)))d.dates.push(Date.parse(a.date));
+  stats.set(k,d);
+ }
+ // Research coverage indicator, NOT a left/right estimate: max 50 article
+ // sample size, 25 topic spread, 25 days spread. Never used for political labels.
+ return new Map([...stats].map(([key,v])=>{
+  const articles=v.urls.size,topics=v.topics.size;
+  const span=v.dates.length?Math.max(...v.dates)-Math.min(...v.dates):0;
+  const days=Math.max(0,span/86400000);
+  const coverage=Math.round(50*Math.min(1,articles/20)+25*Math.min(1,topics/3)+25*Math.min(1,days/14));
+  return [key,{articles,topics,days:Math.round(days),coverage}];
+ }));
 }
 function surveyBar(list){
  const observed=list.filter(p=>p.live),counts={left:0,center:0,right:0,unknown:0};
@@ -96,7 +110,7 @@ function markup(){
  const observed=evidenceStats();
  const rows=list.map(m=>
   '<article class="ol-dir-row" data-ol-dir-region="'+m.region+'" data-ol-dir-live="'+m.live+'" data-ol-dir-kind="'+m.kind+'" data-ol-dir-name="'+esc((m.name+' '+m.type).toLowerCase())+'">'+
-  '<div class="ol-dir-name"><strong>'+esc(m.name)+'</strong><span>'+esc(regionNames[m.region]||'Overige')+' · '+esc(m.type)+(m.live?' · Aangetroffen in nieuwsfeed':' · Catalogus')+' · Historische steekproef: '+(observed.get(normal(m.name))||0)+' artikelen</span></div>'+
+  '<div class="ol-dir-name"><strong>'+esc(m.name)+'</strong><span>'+esc(regionNames[m.region]||'Overige')+' · '+esc(m.type)+(m.live?' · Aangetroffen in nieuwsfeed':' · Catalogus')+' · Historische steekproef: '+(observed.get(normal(m.name))?.articles||0)+' artikelen · Onderzoeksdekking: '+(observed.get(normal(m.name))?.coverage||0)+'/100</span></div>'+
   '<div class="ol-dir-meta"><span class="ol-dir-badge '+m.kind+' ol-dir-'+tone(m)+'">'+esc(status(m))+'</span>'+
   (m.ratingLink?'<a href="'+esc(m.ratingLink)+'" target="_blank" rel="noopener noreferrer">AllSides / bronprofiel ↗</a>':'')+(m.orientationLink?'<a href="'+esc(m.orientationLink)+'" target="_blank" rel="noopener noreferrer">Eurotopics ↗</a>':'')+(!m.link?'<small>Geen beoordeling beschikbaar</small>':'')+
   '</div></article>').join('');
@@ -111,7 +125,7 @@ function markup(){
  '<p class="ol-dir-foot">Deze uitgebreide catalogus bevat ook namen die nog niet zijn gevonden in de live feeds. De scan draait bij openen en op verzoek, niet voortdurend op de achtergrond. AllSides en Eurotopics worden niet live gesynchroniseerd.</p>'+
  '<div class="ol-dir-explain"><strong>Meetinstrument:</strong> '+(ui.evidence.generatedAt?'Laatste historische dataset '+esc(new Date(ui.evidence.generatedAt).toLocaleString('nl-NL')):'Nog geen automatische meting voltooid')+
  ' · '+(ui.evidence.articles?.length||0)+' bewaarde artikelverwijzingen · '+(ui.evidence.successfulQueries||0)+'/'+(ui.evidence.totalQueries||13)+' geslaagde feedqueries. '+
- 'De geplande workflow probeert iedere zes uur nieuwe openbare headlineverwijzingen te verzamelen. Dit is geen volledige-tekstonderzoek en kan geen objectieve politieke overtuiging van een uitgever berekenen.</div>'+
+ 'De geplande workflow probeert iedere zes uur nieuwe openbare headlineverwijzingen te verzamelen. Onderzoeksdekking 0–100 = 50 punten voor maximaal 20 unieke artikelen, 25 voor minstens 3 onderwerpen en 25 voor 14 dagen spreiding. Dit meet steekproefdekking, géén politieke positie. Zonder volledige artikelteksten kan geen betrouwbare automatische politieke overtuiging worden afgeleid.</div>'+
  surveyBar(list)+
  '<div class="ol-dir-legend" aria-label="Kleurlegenda"><span><i class="left"></i>Links</span><span><i class="center"></i>Midden</span><span><i class="right"></i>Rechts</span><span><i class="other"></i>Niet op links-rechtsschaal</span></div>'+ 
  '<section class="ol-dir-panel"><div class="ol-dir-toolbar"><div><h2>Browse sources</h2><p>Search a publisher or explore its source category.</p></div>'+
