@@ -25,8 +25,8 @@ function card(s,i){
  '<div class="ol-feed-overline"><span class="ol-feed-category">'+overline+'</span><span class="ol-feed-time">'+ESC(articleDate(s))+'</span></div>'+
  '<button type="button" class="ol-feed-title" data-ol-open-story="'+id+'" aria-label="Compare coverage: '+title+'">'+title+'</button>'+
  '<p class="ol-feed-description">'+(s.demo?'Illustrative headline group. Refresh to see live publisher links.':
- 'Headlines tentatively grouped by wording. Open the comparison to inspect reporting and sources.')+'</p>'+
- '<div class="ol-feed-source-list"><strong>Publishers:</strong> '+(unique||'Not yet identified')+(outlets.length>3?' · +'+(outlets.length-3)+' more':'')+'</div>'+
+ 'Artikelen zijn voorlopig gegroepeerd op vergelijkbare titels. Open de vergelijking om de originele bronnen te bekijken.')+'</p>'+
+ '<div class="ol-feed-source-list"><strong>Uitgevers:</strong> '+(unique||'Not yet identified')+(outlets.length>3?' · +'+(outlets.length-3)+' more':'')+'</div>'+
  '<div class="ol-feed-line"></div><div class="ol-feed-footer">'+
  '<span class="ol-feed-meta">'+plural(outlets.length,'publisher','publishers')+' · '+plural(articles.length,'article','articles')+'</span>'+
  '<div class="ol-feed-actions"><button type="button" class="ol-feed-save'+(getSaved(s)?' saved':'')+'" data-action="save" data-id="'+id+'" aria-label="'+(getSaved(s)?'Remove saved story':'Save story')+'">'+(getSaved(s)?'Bewaard ✓':'Bewaar')+'</button>'+
@@ -35,17 +35,17 @@ function card(s,i){
 function browse(){
  const stories=filterStories(),count=sourcesCount(stories);
  return '<div class="ol-newsroom"><header class="ol-newsroom-hero"><div><span class="ol-newsroom-kicker">OPENLENS / NEWS INTELLIGENCE</span>'+
- '<h1 id="ol-newsroom-heading" tabindex="-1">The news, with perspective.</h1>'+
- '<p>Discover the headlines. Choose a story to compare publisher reporting, source context and the evidence behind coverage differences.</p></div>'+
+ '<h1 id="ol-newsroom-heading" tabindex="-1">Nieuws in perspectief.</h1>'+
+ '<p>Bekijk het laatste nieuws en vergelijk direct hoe verschillende uitgevers hetzelfde onderwerp belichten.</p></div>'+
  '<div class="ol-newsroom-actions"><span class="ol-feed-status">'+
- (state.mode==='live'?'Live headline sample':state.mode==='cached'?'Saved headline sample':'Illustrative demo')+'</span>'+
- '<button type="button" data-action="refresh" class="btn primary">'+(state.loading?'Refreshing…':'↻ Refresh news')+'</button></div></header>'+
+ (state.mode==='live'?'Actuele nieuwsselectie':state.mode==='cached'?'Bewaarde nieuwsselectie':'Voorbeeldgegevens')+'</span>'+
+ '<button type="button" data-action="refresh" class="btn primary">'+(state.loading?'Vernieuwen…':'↻ Vernieuw nieuws')+'</button></div></header>'+
  '<section aria-label="Explore news topics">'+filterSection()+'</section>'+
  '<div class="ol-newsroom-toolbar"><div><h2>Nieuwste headlines eerst</h2><p>Gesorteerd op nieuwste beschikbare publicatie-, feed- of indexdatum. Dit is niet altijd de oorspronkelijke publicatietijd.</p></div>'+
  '<span class="ol-newsroom-count">'+plural(stories.length,'story','stories')+' · '+plural(count,'publisher','publishers')+'</span></div>'+
  '<section class="ol-newsroom-grid" aria-label="News stories">'+
  (stories.length?stories.map(card).join(''):
- '<div class="ol-feed-empty"><h3>No stories found</h3><p>Change a filter or refresh the available headlines.</p><button class="ol-feed-cta" data-action="clear">Clear filters</button></div>')+
+ '<div class="ol-feed-empty"><h3>Geen artikelen gevonden</h3><p>Pas de filters aan of vernieuw de nieuwsselectie.</p><button class="ol-feed-cta" data-action="clear">Wis filters</button></div>')+
  '</section><details class="ol-sample-disclosure" id="ol-sample-disclosure"><summary>Explore the political-source distribution in this sample</summary><div id="ol-sample-disclosure-body"></div></details>'+
  '<p class="ol-newsroom-disclaimer">OpenLens samples news headlines and publisher information; it does not certify article accuracy, identify proven omissions or represent the entire media landscape. '+(state.lastFetched?'Feed fetched '+ESC(timeFmt(state.lastFetched))+'.':'')+'</p></div>';
 }
