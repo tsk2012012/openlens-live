@@ -10,7 +10,7 @@ A polished, self-contained news review website that runs on desktop and iPhone. 
 
 ## Stap 1: persistent nieuwsarchief (in voorbereiding)
 
-De nieuwsdatabankcode en beveiligde import-API zijn toegevoegd, maar **PostgreSQL is nog niet gekoppeld aan de productieomgeving**. De bestaande live nieuwsfeed blijft zonder database werken.
+**PostgreSQL is nu gekoppeld en de eerste import is voltooid op 12 november 2026.** Bij die import werden 606 unieke artikelen en 151 uitgevers opgeslagen, verdeeld over drie zoekonderwerpen (Nederland, Europa en Wereld). De bestaande live nieuwsfeed blijft zonder database werken.
 
 - `GET /api/storage-status` — of de database verbonden is, opgeslagen artikelen en uitgevers, laatste import.
 - `GET /api/stored-news?topic=netherlands&period=7` — gearchiveerde nieuwsmetadata, zodra de database is gevuld.
@@ -18,7 +18,7 @@ De nieuwsdatabankcode en beveiligde import-API zijn toegevoegd, maar **PostgreSQ
 - Import is in `vercel.json` **dagelijks om 04:17 UTC** gepland. De taak wisselt een selectie van zes NL/EU/wereldonderwerpen af.
 - Normalisatie en opslag bewaren bronherkomst, timestamps en topic-koppelingen. Er worden geen politieke bias-scores uit headlines afgeleid.
 
-**Eenmalig activeren:** verbind een eigen Neon/PostgreSQL-database aan het Vercel-project, configureer `DATABASE_URL` en een lange willekeurige `CRON_SECRET` in Vercel (niet in de repository), redeploy en controleer `/api/storage-status`.
+**Geactiveerd:** Neon/PostgreSQL en `DATABASE_URL`/`CRON_SECRET` zijn voor productie geconfigureerd. Controleer `/api/storage-status` voor actuele cijfers. De reguliere Vercel Cron is dagelijks gepland; de eerste import is eenmalig beveiligd via de Vercel-build uitgevoerd.
 
 De precieze veilige stappen staan in [docs/NEWS_DATABASE_SETUP.md](docs/NEWS_DATABASE_SETUP.md).
 
