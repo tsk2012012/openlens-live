@@ -1,0 +1,68 @@
+
+/* OpenLens unified workspace: full-width without the old sidebar */
+.ol-refresh .app{display:block!important;grid-template-columns:1fr!important;min-height:100vh}
+.ol-refresh .sidebar{display:none!important}
+.ol-refresh .workspace{min-width:0;width:100%}
+.ol-refresh .topbar{display:none!important}
+.ol-refresh .content{width:100%;max-width:1580px;margin:0 auto;padding:26px 32px 76px}
+.ol-unified-header{position:sticky;top:0;z-index:110;background:var(--paper,#fff);border-bottom:1px solid var(--line,#e0e8e3);box-shadow:0 3px 20px rgba(18,38,34,.04)}
+.ol-unified-inner{max-width:1650px;padding:0 30px;min-height:70px;margin:0 auto;display:flex;align-items:center;gap:18px}
+.ol-unified-brand{display:inline-flex;align-items:center;flex-shrink:0;gap:10px;text-decoration:none;color:var(--ink,#18323d);font-weight:850;font-size:20px;letter-spacing:-.65px}
+.ol-unified-brand img{width:33px;height:33px;border-radius:9px}
+.ol-unified-brand small{display:block;letter-spacing:.06em;text-transform:uppercase;font-size:8px;font-weight:750;color:#759186;line-height:1.1}
+.ol-unified-nav{display:flex;align-items:center;gap:3px;flex:1;min-width:0}
+.ol-unified-nav button{border:0;background:transparent;color:var(--muted,#52685c);font-size:12px;font-weight:730;border-radius:9px;padding:11px 12px;white-space:nowrap}
+.ol-unified-nav button:hover{background:rgba(76,141,122,.08)}
+.ol-unified-nav button[aria-current="page"]{background:#e5f3ea;color:#0b725f}
+.ol-unified-actions{display:flex;align-items:center;gap:7px;margin-left:auto}
+.ol-unified-status{font-size:10px;color:#54786c;background:#eef7f0;border:1px solid #deeee2;border-radius:100px;padding:6px 9px;white-space:nowrap}
+.ol-unified-status.demo{color:#a36a2b;background:#fff4e4;border-color:#f2dfc8}
+.ol-unified-actions>.ol-theme-toggle{display:inline-flex!important;align-items:center;gap:4px;border-radius:9px;border:1px solid #dce8df;background:transparent;color:var(--ink,#27483d);padding:8px 10px;font-size:12px;font-weight:720;white-space:nowrap}
+.ol-unified-more{position:relative}
+.ol-unified-more>summary{cursor:pointer;list-style:none;border:1px solid #dce8df;border-radius:9px;padding:9px 11px;font-size:12px;font-weight:740;color:var(--ink,#27483d);white-space:nowrap}
+.ol-unified-more>summary::-webkit-details-marker{display:none}
+.ol-unified-menu{position:absolute;right:0;top:calc(100% + 9px);background:var(--paper,#fff);border:1px solid var(--line,#dce8df);border-radius:13px;min-width:230px;box-shadow:0 12px 34px rgba(17,37,32,.16);padding:7px;display:grid;gap:3px}
+.ol-unified-menu button{cursor:pointer;text-align:left;border:0;background:transparent;color:var(--ink,#243e35);border-radius:8px;padding:10px 12px;font-size:12px;font-weight:700}
+.ol-unified-menu button:hover{background:#e7f4eb;color:#146e58}
+.ol-unified-menu small{display:block;color:#82938a;font-weight:500;margin-top:3px;line-height:1.3}
+.ol-workspace-tools{margin:0 0 18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,.87fr);gap:12px;scroll-margin-top:100px}
+.ol-workspace-card{background:var(--paper,#fff);border:1px solid var(--line,#dce6dc);border-radius:14px;padding:17px 17px 15px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.ol-workspace-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:9px}
+.ol-workspace-card h2{font-size:14px;color:var(--ink,#22443b);font-weight:780;margin:0}
+.ol-workspace-card p{font-size:11px;line-height:1.55;color:var(--muted,#70857b);margin:0}
+.ol-workspace-count{display:inline-grid;place-items:center;min-width:28px;height:28px;border-radius:9px;background:#edf6ee;color:#19735c;font-weight:800;font-size:12px;padding:0 6px}
+.ol-workspace-items{display:grid;gap:5px;min-height:56px;align-content:start}
+.ol-workspace-item{display:block;width:100%;border:0;background:rgba(137,171,149,.075);border-radius:7px;text-align:left;color:var(--ink,#2e4b41);font-size:11px;line-height:1.45;padding:8px 9px;cursor:pointer;font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ol-workspace-item:hover{background:#e5f3e9}
+.ol-workspace-item small{color:#5e8871;font-size:10px;font-weight:600;margin-left:5px}
+.ol-workspace-buttons{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:auto}
+.ol-workspace-buttons button{border:1px solid #d5e9da;background:#eef7f0;color:#156c56;border-radius:8px;padding:8px 11px;font-size:11px;font-weight:750;cursor:pointer}
+.ol-workspace-buttons button:hover{background:#dbeee0}
+.ol-workspace-buttons .ol-workspace-muted{border-color:transparent;background:transparent;color:var(--muted,#668376)}
+.ol-workspace-tools .ol-workspace-research .ol-workspace-items{display:flex;gap:6px;flex-wrap:wrap;min-height:0}
+.ol-workspace-research .ol-workspace-items button{border:1px solid #dce9dd;background:transparent;color:var(--ink,#285143);border-radius:9px;padding:8px 10px;font-size:11px;font-weight:700;cursor:pointer}
+.ol-workspace-research .ol-workspace-items button:hover{background:#e7f3eb}
+html[data-ol-theme=dark] .ol-unified-nav button[aria-current=page]{background:#244f43;color:#d3f7e4}
+html[data-ol-theme=dark] .ol-unified-status{background:#24483d;color:#c7efdb;border-color:#356655}
+html[data-ol-theme=dark] .ol-unified-status.demo{background:#423528;color:#f5d1a8}
+html[data-ol-theme=dark] .ol-workspace-count{background:#264a3d;color:#d1f3dc}
+html[data-ol-theme=dark] .ol-workspace-item{background:#254338;color:#e5f1e8}
+html[data-ol-theme=dark] .ol-workspace-item:hover,html[data-ol-theme=dark] .ol-unified-menu button:hover{background:#35584a;color:#f3fff8}
+html[data-ol-theme=dark] .ol-workspace-buttons button{background:#294f40;border-color:#3b6b55;color:#dcf4e3}
+html[data-ol-theme=dark] .ol-workspace-research .ol-workspace-items button{border-color:#365e4d;color:#dcf4e3}
+@media(max-width:1120px){.ol-unified-inner{gap:12px;padding:0 18px}.ol-unified-nav button{padding:9px 8px;font-size:11px}.ol-unified-status{display:none}.ol-workspace-tools{grid-template-columns:repeat(2,minmax(0,1fr))}.ol-workspace-research{grid-column:1/-1}}
+@media(max-width:760px){
+.ol-refresh .content{padding:19px 15px 65px}
+.ol-unified-inner{padding:10px 14px 8px;min-height:0;gap:8px;display:flex;flex-wrap:wrap;justify-content:space-between}
+.ol-unified-brand{font-size:18px}
+.ol-unified-brand img{width:30px;height:30px}
+.ol-unified-nav{order:3;width:100%;flex:1 0 100%;overflow-x:auto;gap:5px;scrollbar-width:thin;padding:4px 0 1px}
+.ol-unified-nav button{font-size:11px;padding:9px 10px;flex:none}
+.ol-unified-more>summary{padding:7px 10px}
+.ol-unified-actions>.ol-theme-toggle{padding:7px 9px}
+.ol-unified-menu{z-index:5}
+.ol-workspace-tools{grid-template-columns:1fr;gap:9px}
+.ol-workspace-research{grid-column:auto}
+.ol-workspace-card{padding:14px}
+}
+@media(prefers-reduced-motion:reduce){.ol-unified-header *{scroll-behavior:auto!important}}
