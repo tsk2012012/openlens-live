@@ -56,6 +56,17 @@ function publishers(){
     note:meta?.typeExplanation||'Publisher identity has not been fully reviewed.'};
  });
 }
+
+const tone=m=>{
+ const raw=m.rating||(m.orientation==='Left-wing'?'Left':m.orientation==='Centre-left'?'Lean Left':m.orientation==='Right-wing'?'Right':null);
+ if(raw==='Left'||raw==='Lean Left')return 'left';
+ if(raw==='Center')return 'center';
+ if(raw==='Right'||raw==='Lean Right')return 'right';
+ return 'other';
+};
+const colorStyle=document.createElement('style');
+colorStyle.textContent='.ol-dir-badge.ol-dir-left{background:#dfeaff!important;color:#204b9e!important;border-left:4px solid #3c70d6}.ol-dir-badge.ol-dir-center{background:#e5ede7!important;color:#355747!important;border-left:4px solid #6b9b83}.ol-dir-badge.ol-dir-right{background:#ffe4e3!important;color:#963b3a!important;border-left:4px solid #d45e5c}.ol-dir-badge.ol-dir-other{background:#edf0f1!important;color:#455b61!important;border-left:4px solid #95a2a5}.ol-dir-legend{display:flex;flex-wrap:wrap;gap:9px;margin:12px 0;font-size:11px;align-items:center}.ol-dir-legend span{display:inline-flex;gap:6px;align-items:center}.ol-dir-legend i{height:10px;width:10px;border-radius:3px;display:inline-block}.ol-dir-legend .left{background:#3c70d6}.ol-dir-legend .center{background:#6b9b83}.ol-dir-legend .right{background:#d45e5c}.ol-dir-legend .other{background:#95a2a5}';
+document.head.append(colorStyle);
 function markup(){
  const list=publishers(),rated=list.filter(x=>x.kind==='rated').length,
   orgs=list.filter(x=>x.kind==='institution').length,unrated=list.length-rated-orgs;
@@ -63,7 +74,7 @@ function markup(){
  const rows=list.map(m=>
   '<article class="ol-dir-row" data-ol-dir-region="'+m.region+'" data-ol-dir-live="'+m.live+'" data-ol-dir-kind="'+m.kind+'" data-ol-dir-name="'+esc((m.name+' '+m.type).toLowerCase())+'">'+
   '<div class="ol-dir-name"><strong>'+esc(m.name)+'</strong><span>'+esc(regionNames[m.region]||'Overige')+' · '+esc(m.type)+(m.live?' · Aangetroffen in nieuwsfeed':' · Catalogus')+'</span></div>'+
-  '<div class="ol-dir-meta"><span class="ol-dir-badge '+m.kind+'">'+esc(status(m))+'</span>'+
+  '<div class="ol-dir-meta"><span class="ol-dir-badge '+m.kind+' ol-dir-'+tone(m)+'">'+esc(status(m))+'</span>'+
   (m.ratingLink?'<a href="'+esc(m.ratingLink)+'" target="_blank" rel="noopener noreferrer">AllSides / bronprofiel ↗</a>':'')+(m.orientationLink?'<a href="'+esc(m.orientationLink)+'" target="_blank" rel="noopener noreferrer">Eurotopics ↗</a>':'')+(!m.link?'<small>Geen beoordeling beschikbaar</small>':'')+
   '</div></article>').join('');
  const body=document.getElementById('content');if(!body)return;
@@ -75,6 +86,7 @@ function markup(){
  '</div><div class="ol-dir-explain"><strong>What these labels mean:</strong> Newsroom political ratings come from cited external assessments, not OpenLens guesses. Government bodies, research groups and other institutions are grouped by source type. Unrated does not mean Center. A Eurotopics editorial-orientation profile (e.g. Liberal or Christian) need not map to Left–Right. AllSides and Eurotopics use different methodologies. This directory represents the current feed, not the entire news ecosystem.</div>'+
  '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0"><button class="ol-dir-button" type="button" id="ol-dir-refresh" '+(ui.loading?'disabled':'')+'>↻ '+(ui.loading?'Nieuwsfeeds worden opgehaald…':'Ververs uitgevers uit NL, EU en Wereld')+'</button><small>'+esc(ui.error||('Laatste scan: '+(ui.updated?new Date(ui.updated).toLocaleString('nl-NL'):'nog niet uitgevoerd')))+'</small></div>'+
  '<p class="ol-dir-foot">Deze uitgebreide catalogus bevat ook namen die nog niet zijn gevonden in de live feeds. De scan draait bij openen en op verzoek, niet voortdurend op de achtergrond. AllSides en Eurotopics worden niet live gesynchroniseerd.</p>'+
+ '<div class="ol-dir-legend" aria-label="Kleurlegenda"><span><i class="left"></i>Links</span><span><i class="center"></i>Midden</span><span><i class="right"></i>Rechts</span><span><i class="other"></i>Niet op links-rechtsschaal</span></div>'+ 
  '<section class="ol-dir-panel"><div class="ol-dir-toolbar"><div><h2>Browse sources</h2><p>Search a publisher or explore its source category.</p></div>'+
  '<label>Search publishers<input id="ol-dir-search" placeholder="Search by name or source type" value="'+esc(ui.query)+'" autocomplete="off"></label></div>'+
  '<div style="margin:10px 0"><label for="ol-dir-region">Regio: </label><select id="ol-dir-region" class="filter">'+[['all','Alle regio’s'],['nl','Nederland'],['eu','Europa / EU'],['world','Wereld'],['other','Overige']].map(([k,v])=>'<option value="'+k+'" '+(ui.region===k?'selected':'')+'>'+v+'</option>').join('')+'</select></div>'+
