@@ -8,8 +8,8 @@ De eerste versie groepeerde artikelen uitsluitend via een vaste drempel op woord
 
 1. Normaliseer koppen (hoofdletters, accenten, leestekens) en sla generieke stopwoorden over.
 2. Herken een **beperkte, expliciete woordenlijst** met overeenkomende Nederlandse, Engelse, Duitse en Franse termen. Bijvoorbeeld `Tweede Kamer` en `Dutch lower house`, `woningbouw` en `housing`.
-3. Vergelijk betekenisdragende woorden, een gecureerde set entiteiten en geografische ankers. Ten minste meerdere inhoudelijke overeenkomsten zijn nodig.
-4. Vermijd bekende onwaarschijnlijke combinaties: uiteenlopende landen, verschillende genoemde jaren, tegengestelde goedkeuring/afwijzing en koppen meer dan 96 uur uiteen (wanneer datums bekend zijn).
+3. Vergelijk betekenisdragende woorden, een gecureerde set entiteiten, plaatsnamen, straatnamen en herkenbare persoonsnamen. Ten minste meerdere inhoudelijke overeenkomsten zijn nodig.
+4. Vermijd bekende onwaarschijnlijke combinaties: uiteenlopende landen, verschillende genoemde jaren, onderscheiden personen, tegengestelde goedkeuring/afwijzing, aanvallen tegenover diplomatieke gesprekken en koppen meer dan 96 uur uiteen (wanneer datums bekend zijn). Voor lokale incidenten geldt een korter tijdvenster van 24 uur en mogen verschillende straatherkenningen niet samenvallen.
 5. Voorkom het **kettingeffect**: een nieuw artikel moet overeenkomen met de eerste groepskop en maximaal twee extra groepskoppen; alleen overeenkomst met één willekeurige groepsgenoot is niet genoeg.
 6. Geef elk cluster een zichtbaar label:
    - **Sterke kopovereenkomst** — automatische hoge woord-/entiteitsoverlap, **niet bewezen dezelfde gebeurtenis**.
@@ -31,7 +31,7 @@ Het onderliggende getal is een **heuristische samenhangsscore**, géén gekalibr
 
 ## Tests
 
-`tests/story-cluster.test.mjs` dekt onder andere meertalige positieve matches, verschillende landen en jaren, tegenovergestelde parlementaire besluiten, tijdgrenzen en het voorkomen van kettingclustering.
+`tests/story-cluster.test.mjs` dekt onder andere meertalige positieve matches, verschillende landen en jaren, tegenovergestelde parlementaire besluiten, verkeersongevallen in verschillende straten, sprekers op dezelfde conferentie, diplomatie tegenover aanvallen, tijdgrenzen en het voorkomen van kettingclustering.
 
 ```bash
 npm run check
