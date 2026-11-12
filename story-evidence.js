@@ -104,9 +104,9 @@ function mount(){
             reader.querySelector('#ol-reader-analysis');
  if(spot)spot.before(panel);else reader.append(panel);
 }
-async function fetchPreview(entry){
+async function fetchPreview(entry,force=false){
  const hit=cache.get(entry.url);
- if(hit&&Date.now()-hit.when<MAX_AGE)return hit.preview;
+ if(!force&&hit&&Date.now()-hit.when<MAX_AGE)return hit.preview;
  const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),10500);
  try{
   const res=await fetch('/api/article-preview?'+new URLSearchParams({url:entry.url}),
@@ -138,7 +138,7 @@ async function start(id){
  const worker=async()=>{
   while(next<rows.length){
    const entry=rows[next++];
-   await fetchPreview(entry);
+   await fetchPreview(entry,previous?.status==='ready');
    record.done++;
    if(story()?.id===id)mount();
   }
