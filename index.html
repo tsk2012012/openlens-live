@@ -109,7 +109,7 @@ function classifyNewsRegion(title='',discovery='',provided=null,topic=state.topi
  const world=/\b(oekra[iï]ne|ukraine|kyiv|kiev|gaza|rafah|israel|iran|syria|syri[eë]|lebanon|libanon|china|chinese|taiwan|india|indiase|japan|japanese|russia|rusland|moskou|moscow|verenigde staten|united states|washington|white house|trump|biden|united nations|verenigde naties|nato|navo|middle east|midden-oosten|afrika|africa|zuid-amerika|south america)\b/i.test(t);
  // EU policy about the Netherlands is an EU story; likewise a clearly identified NL
  // local implementation is Dutch unless EU legislation is the main explicit subject.
- if(eu)return 'eu';
+ if(eu||/\b(eu|europese wetgeving|european legislation|brussels regulation|eu-begroting|eu budget)\b/i.test(t))return 'eu';
  if(nl&&!world)return 'nl';
  if(world&&!nl)return 'world';
  if(nl&&world)return 'world'; // cross-border events are not automatically domestic
@@ -120,13 +120,16 @@ function classifyNewsRegion(title='',discovery='',provided=null,topic=state.topi
 }
 function newsDate(a){const d=Date.parse(a?.when||'');return Number.isFinite(d)?d:-Infinity}
 function storyDate(s){return Math.max(-Infinity,...(s?.articles||[]).map(newsDate))}
-function newestFirst(a,b){return storyDate(b)-storyDate(a)||String(a.title).localeCompare(String(b.title))}
+function newestFirst(a,b){const da=storyDate(a),db=storyDate(b);return (Number.isFinite(db)?db:0)-(Number.isFinite(da)?da:0)||String(a.title).localeCompare(String(b.title))}
 function normalizeArticles(arr){let seen=new Set();return arr.map((a,i)=>{let url=safeURL(a.url),title=(a.title||'').trim(),domain=(a.domain||a.source||'').toLowerCase(),when=a.when||a.published||a.seendate||null;let d=when&&/^\d{8}T\d{6}Z$/.test(when)?`${when.slice(0,4)}-${when.slice(4,6)}-${when.slice(6,8)}T${when.slice(9,11)}:${when.slice(11,13)}:${when.slice(13,15)}Z`:when;return {...a,id:a.id||url||'article-'+i,title,url,domain,when:d&&Number.isFinite(+new Date(d))?new Date(d).toISOString():null,kind:contentType(title),topic:storyTopic(title),region:classifyNewsRegion(title,a.discovery||'',a.region||null)}}).filter(a=>{let key=a.url||a.domain+'|'+a.title.toLowerCase();if(!a.title||seen.has(key))return false;seen.add(key);return true})}
 function clusterArticles(articles){let groups=[];let sorted=[...articles].sort((a,b)=>(Date.parse(b.when)||0)-(Date.parse(a.when)||0));for(let a of sorted){let best=-1,score=0;for(let i=0;i<groups.length;i++){let c=Math.max(...groups[i].articles.slice(0,4).map(x=>similarity(x.title,a.title)));if(c>score){score=c;best=i}}if(best>=0&&score>=.46&&tokens(a.title).length>=3){groups[best].articles.push(a)}else{groups.push({articles:[a]})}}return groups.map((g,i)=>{let ats=g.articles.sort((a,b)=>newsDate(b)-newsDate(a));let representative=[...ats].sort((a,b)=>b.title.length-a.title.length)[0];let names=new Set(ats.map(a=>sourceInfo(a).name));return {id:'live-'+simpleHash(ats.map(a=>a.id).sort().join('|')),title:representative.title,topic:storyTopic(representative.title),region:classifyNewsRegion(representative.title,'',null,state.feedTopic||state.topic),description:`${ats.length} matching indexed article${ats.length===1?'':'s'} from ${names.size} named outlet${names.size===1?'':'s'}. Headline similarity is not confirmation of identical events.`,articles:ats,match:ats.length>1?'Tentative headline match':'Single indexed article',demo:false,terms:[]}}).sort(newestFirst).slice(0,185)}
 function simpleHash(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return Math.abs(h).toString(36)}
 function setArticles(articles,mode,feedTopic=state.topic){state.allArticles=normalizeArticles(articles);state.feedTopic=feedTopic;let links=state.allArticles.map(a=>a.url).filter(Boolean);let old=new Set(state.seenLinks);state.lastNewCount=old.size?links.filter(x=>!old.has(x)).length:null;state.seenLinks=[...new Set([...links,...state.seenLinks])].slice(0,2400);state.history.unshift({at:new Date().toISOString(),items:state.allArticles.length,newLinks:state.lastNewCount});state.history=state.history.slice(0,45);state.stories=clusterArticles(state.allArticles);state.mode=mode;state.lastFetched=new Date().toISOString();if(!state.stories.some(x=>x.id===state.selected))state.selected=state.stories[0]?.id||null;persist();render()}
 function init(){state.stories=demoData();state.selected=state.stories[0].id;let snap=memory.snapshot;if(snap?.articles?.length&&Number.isFinite(Date.parse(snap.when))){state.allArticles=normalizeArticles(snap.articles);state.stories=clusterArticles(state.allArticles);state.selected=state.stories[0]?.id;state.mode='cached';state.lastFetched=snap.when}document.addEventListener('click',onClick);document.addEventListener('change',onChange);document.addEventListener('input',onInput);document.addEventListener('submit',onSubmit);render();setTimeout(()=>refreshNews(true),500)}
-function filterStories(){let result=state.stories.filter(s=>{if(state.topic!=='all'&&state.feedTopic!==state.topic&&s.topic.toLowerCase()!==state.topic)return false;if(state.search){let q=state.search.toLowerCase();if(!(s.title+' '+s.articles.map(a=>a.title+' '+sourceInfo(a).name).join(' ')).toLowerCase().includes(q))return false}return filteredArticles(s).length>0});return result.sort(newestFirst)}
+function filterStories(){let result=state.stories.filter(s=>{if(state.topic!=='all'&&state.feedTopic!==state.topic&&s.topic.toLowerCase()!==state.topic)return false;if(state.feedTopic===state.topic){
+ const target=state.topic==='netherlands'?'nl':state.topic==='europe'?'eu':state.topic==='world'?'world':null;
+ if(target&&s.region&&s.region!==target)return false;
+}if(state.search){let q=state.search.toLowerCase();if(!(s.title+' '+s.articles.map(a=>a.title+' '+sourceInfo(a).name).join(' ')).toLowerCase().includes(q))return false}return filteredArticles(s).length>0});return result.sort(newestFirst)}
 function filteredArticles(s){return s.articles.filter(a=>{let o=sourceInfo(a).name;if(state.outlet!=='all'&&o!==state.outlet)return false;if(state.country!=='all'&&state.mode==='live'&&a.country&&a.country.toLowerCase()!==state.country.toLowerCase())return false;if(state.language!=='all'&&state.mode==='live'&&a.language&&a.language.toLowerCase()!==state.language.toLowerCase())return false;if(state.period!=='all'&&state.mode==='live'&&a.when&&(Date.now()-Date.parse(a.when)>Number(state.period)*86400000))return false;return true}).sort((a,b)=>newsDate(b)-newsDate(a))}
 function current(){let list=filterStories();let found=list.find(s=>s.id===state.selected);return found||list[0]||null}
 function sourcesCount(list=filterStories()){return new Set(list.flatMap(s=>filteredArticles(s)).map(a=>sourceInfo(a).name)).size}
@@ -173,7 +176,7 @@ init();
 <script src="editorial-review.js?v=20261110review"></script>
 <script src="publisher-directory.js?v=20261110profilesv2"></script>
 <script src="product-shell.js?v=20261110pro"></script>
-<script src="editorial-home.js?v=20261110editorial"></script>
+<script src="editorial-home.js?v=20261112chrono2"></script>
 <script src="story-watch.js?v=20261110watch"></script>
 <script src="official-milestones.js?v=20261110official"></script>
 <script src="coverage-metrics.js?v=20261110coverage"></script>
