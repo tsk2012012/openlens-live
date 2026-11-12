@@ -22,6 +22,10 @@ A polished, self-contained news review website that runs on desktop and iPhone. 
 
 De precieze veilige stappen staan in [docs/NEWS_DATABASE_SETUP.md](docs/NEWS_DATABASE_SETUP.md).
 
+## Stap 2: betrouwbaardere verhaalclustering
+
+Koppen worden nu conservatief gegroepeerd via meertalige termen, bekende namen, geografische aanduidingen, afwijkende besluiten en tijdvensters. Verschillende ongevallen op verschillende straten, tegenovergestelde parlementaire besluiten en verschillende conferentiesprekers blijven gescheiden. Elke nieuwskaart en elk verhaaldossier toont of een koppeling sterk, voorlopig of niet gemaakt is — **nooit als bewezen dezelfde gebeurtenis**. Er zijn 16 tests en er is een controle op gearchiveerde NL/EU/Wereld-koppen uitgevoerd. Zie [docs/STORY_CLUSTERING.md](docs/STORY_CLUSTERING.md).
+
 ## Features
 
 - Responsive story dashboard for phone and desktop
