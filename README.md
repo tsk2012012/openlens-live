@@ -8,6 +8,20 @@ A polished, self-contained news review website that runs on desktop and iPhone. 
 - **With live Google News RSS:** Install Node.js 20+, run `npm run dev`, and open **http://localhost:3000**. The server provides `/api/news`, so browser CORS issues with RSS are avoided.
 - **Publish it online:** Push all files to a GitHub repository, import the repository on Vercel, and deploy with the defaults. Vercel will serve `index.html` and the serverless `api/news.js` endpoint. You do not need environment variables or API keys for this basic prototype.
 
+## Stap 1: persistent nieuwsarchief (in voorbereiding)
+
+De nieuwsdatabankcode en beveiligde import-API zijn toegevoegd, maar **PostgreSQL is nog niet gekoppeld aan de productieomgeving**. De bestaande live nieuwsfeed blijft zonder database werken.
+
+- `GET /api/storage-status` — of de database verbonden is, opgeslagen artikelen en uitgevers, laatste import.
+- `GET /api/stored-news?topic=netherlands&period=7` — gearchiveerde nieuwsmetadata, zodra de database is gevuld.
+- `GET /api/ingest` — beveiligde Vercel Cron-import; vereist `CRON_SECRET` en `DATABASE_URL`.
+- Import is in `vercel.json` **dagelijks om 04:17 UTC** gepland. De taak wisselt een selectie van zes NL/EU/wereldonderwerpen af.
+- Normalisatie en opslag bewaren bronherkomst, timestamps en topic-koppelingen. Er worden geen politieke bias-scores uit headlines afgeleid.
+
+**Eenmalig activeren:** verbind een eigen Neon/PostgreSQL-database aan het Vercel-project, configureer `DATABASE_URL` en een lange willekeurige `CRON_SECRET` in Vercel (niet in de repository), redeploy en controleer `/api/storage-status`.
+
+De precieze veilige stappen staan in [docs/NEWS_DATABASE_SETUP.md](docs/NEWS_DATABASE_SETUP.md).
+
 ## Features
 
 - Responsive story dashboard for phone and desktop
