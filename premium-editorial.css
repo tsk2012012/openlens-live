@@ -32,6 +32,13 @@ button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible,s
 .ol-unified-nav button[aria-current=page]{background:transparent;color:var(--ol-ink)}
 .ol-unified-nav button[aria-current=page]::after{content:'';position:absolute;bottom:13px;left:14px;right:14px;height:2px;background:var(--ol-gold)}
 .ol-unified-status{font-family:var(--ol-mono);font-size:9px;padding:7px 9px;letter-spacing:.01em;background:#f0f1e9;border:1px solid var(--ol-rule);color:#51685b}
+.ol-archive-status{display:inline-flex;align-items:center;max-width:220px;border:1px solid var(--ol-rule);color:#6b705f;
+ background:#f6f2e8;font:500 9px var(--ol-mono);padding:7px 9px;line-height:1.4;letter-spacing:.01em;border-radius:3px}
+.ol-archive-status[data-state=collecting]{color:#285a4b;background:#e9f0e8;border-color:#ccdecc}
+.ol-archive-status[data-state=unavailable]{background:#f4e9e7;color:#895b49}
+html[data-ol-theme=dark] .ol-archive-status{background:#27332d;color:#cfccba;border-color:#485149}
+html[data-ol-theme=dark] .ol-archive-status[data-state=collecting]{background:#254739;color:#d7efdd}
+@media(max-width:880px){.ol-archive-status{display:none}}
 .ol-unified-status::before{content:'●';font-size:8px;color:#467760;margin-right:7px}
 .ol-unified-actions>.ol-theme-toggle{background:transparent;border:1px solid var(--ol-rule);border-radius:6px;font-family:var(--ol-ui);font-weight:750}
 .ol-unified-more>summary{border:1px solid var(--ol-rule);border-radius:6px;background:transparent;font-size:11px}
