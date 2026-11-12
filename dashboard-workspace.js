@@ -90,7 +90,7 @@ function injectDashboard(){
  hero.insertAdjacentHTML('afterend',overview());
 }
 const previous=render;
-render=function(){previous();ensureHeader();updateHeader();injectDashboard();updateArchiveStatus();updateArchiveStatus()};
+render=function(){previous();ensureHeader();updateHeader();injectDashboard();updateArchiveStatus()};
 document.addEventListener('click',e=>{
  if(e.target.closest('[data-ol-workspace-jump]')){
   e.preventDefault();e.stopImmediatePropagation();
