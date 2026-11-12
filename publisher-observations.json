@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "generatedAt": null,
+  "windowDays": 30,
+  "successfulQueries": 0,
+  "totalQueries": 13,
+  "publishersObserved": 0,
+  "articles": [],
+  "method": "Rolling sampled news results. No automated political label assignments."
+}
