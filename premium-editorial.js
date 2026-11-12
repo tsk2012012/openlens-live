@@ -2,7 +2,7 @@
 (function(){
 'use strict';
 if(typeof render!=='function'||typeof state==='undefined')return;
-const link=document.createElement('link');link.rel='stylesheet';link.href='/premium-editorial.css?v=20261112signature1';
+const link=document.createElement('link');link.rel='stylesheet';link.href='/premium-editorial.css?v=20261112cluster2';
 document.head.append(link);
 const currentEdition=()=>{
  try{return new Intl.DateTimeFormat('nl-NL',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date())}
