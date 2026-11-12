@@ -9,7 +9,7 @@ const STOP=new Set((
  +' der die das den dem ein eine und von für mit bei auf im zum zur des ist sind wird werden als auch nach über gegen unter aus am nicht neue neuen weitere'
  +' le la les du des de dans et en pour avec sur est sont aux au une un plus apres selon par que cette ces il elle'
  +' of or nor and oraz un et und de en'
- +' nieuw nieuwe nieuwste nieuws news breaking bericht berichten berichtgeving politie politiek politics political dutch dutchnews europa europe european europees europeese eu'
+ +' nieuw nieuwe nieuwste nieuws news breaking who better lowdown protect protection online bericht berichten berichtgeving politie politiek politics political dutch dutchnews europa europe european europees europeese eu'
  +' regering government kabinet ministers minister lawmakers officials leaders president parlement parliament politician politicus'
  +' update gisteren vandaag today tomorrow yesterday nederlandse euroland'
 ).split(/\s+/));
@@ -38,6 +38,8 @@ const MAP=new Map(Object.entries({
  'bespreekt':'bespreken','discusses':'bespreken','discussed':'bespreken',
  'defensieplannen':'defensie','defenceplans':'defensie','defenseplans':'defensie',
  'plannen':'plan','plans':'plan','plan':'plan',
+ 'talks':'onderhandeling','negotiations':'onderhandeling','onderhandelingen':'onderhandeling','verhandlungen':'onderhandeling',
+ 'send':'afvaardigen','sends':'afvaardigen','stuurt':'afvaardigen','sturen':'afvaardigen','dispatches':'afvaardigen',
  'stemt':'stemming','stemmen':'stemming',
  'staken':'staking','staking':'staking','strikes':'staking','strike':'staking','greve':'staking','streik':'staking',
  'belasting':'belasting','belastingen':'belasting','taxes':'belasting','tax':'belasting','steuern':'belasting','impots':'belasting',
@@ -71,13 +73,38 @@ const PHRASES=[
  [/pays bas|pays-bas/g,' nederland ']
 ];
 const COUNTRIES=new Set('nederland belgie duitsland frankrijk oekraine rusland amerika israel iran china canada gaza ukraine syrie syria turkije turkey polen poland zweden sweden italie italy spanje spain japan india pakistan libanon lebanon'.split(' '));
-const ACTIONS=new Set('goedgekeurd afgewezen aftreden aanval arrestatie stemming voorstel'.split(' '));
+const ACTIONS=new Set('goedgekeurd afgewezen aftreden aanval arrestatie stemming voorstel onderhandeling afvaardigen'.split(' '));
 const CONTRADICTIONS=new Set(['goedgekeurd|afgewezen','afgewezen|goedgekeurd','aftreden|voorstel','voorstel|aftreden','arrestatie|goedgekeurd','goedgekeurd|arrestatie']);
 const STRONG_ENTITY=new Set('trump biden rutte schoof jetten wilders zelensky putin macron merz vonderleyen asml navo eucommissie euparlement tweedekamer'.split(' '));
 const HOURS=96;
 function fold(raw){return String(raw||'').toLowerCase().normalize('NFKD')
  .replace(/[\u0300-\u036f]/g,'').replace(/[’‘]/g,"'").replace(/[^a-z0-9% ]+/g,' ')
  .replace(/\s+/g,' ').trim();}
+const NON_PEOPLE=new Set([
+ 'european commission','european union','european parliament','united nations','climate change',
+ 'digital fairness','abu dhabi','new york','den haag','prime minister','former secretary',
+ 'secretary state','state john','climate activist','online scams','first princess',
+ 'fairness act','north sea','middle east','western europe','european council',
+ 'house representatives','social media','digital services','european central',
+ 'state department','commission proposes','nato summit','world economic',
+ 'european investment','international criminal'
+]);
+const PERSON_CONTEXT=new Set((
+ 'former united secretary minister president prime climate european commission digital first'
+ +' fair online state house press dutch german french belgian russian ukrainian northern eastern western'
+ +' nations royal news world new first second last current former general government'
+).split(/\s+/));
+function peopleOf(title){
+ const result=new Set();
+ const base=String(title||'').split(/\b(?:photos?\s+by|foto\s*:|beeld\s*:|credits?\s*:)/i)[0];
+ const regex=/(?=([\p{Lu}][\p{Ll}]{2,})\s+([\p{Lu}][\p{Ll}]{2,})\b)/gu;
+ for(const m of base.matchAll(regex)){
+  const name=fold(m[1]+' '+m[2]);
+  const left=fold(m[1]),right=fold(m[2]);
+  if(!NON_PEOPLE.has(name)&&!PERSON_CONTEXT.has(left)&&!PERSON_CONTEXT.has(right))result.add(name);
+ }
+ return result;
+}
 function streetsOf(text){
  const all=new Set();
  const plain=fold(text);
@@ -106,10 +133,12 @@ function features(article){
 
  const names=new Set([...terms].filter(x=>STRONG_ENTITY.has(x)));
  const streets=streetsOf(article.title||article||'');
+ const people=peopleOf(article.title||article||'');
+ const explainer=/\bwho s who\b|\bwhat to know\b|\blowdown\b|\bexplainer\b|\bwie is wie\b|\bachtergrond\b/.test(raw);
  const incident=/\b(ongeval|aanrijding|brand|explosie|steekpartij|schietpartij|botsing|crash|collision|traffic accident|collision|explosion)\b/.test(raw);
  const numbers=new Set(wordList.filter(w=>/^(?:19|20)\d\d$/.test(w)));
  const when=Date.parse(article.when||article.publishedAt||article.indexedAt||'');
- return {terms,countries,actions,names,numbers,streets,incident,when:Number.isFinite(when)?when:null,
+ return {terms,countries,actions,names,numbers,streets,people,incident,explainer,when:Number.isFinite(when)?when:null,
   publisher:String(article.source||article.domain||'').toLowerCase().trim()};
 }
 function overlap(a,b){return [...a].filter(x=>b.has(x))}
@@ -121,6 +150,10 @@ function evaluate(A,B){
   if((A.streets.size||B.streets.size)&&!overlap(A.streets,B.streets).length)return null;
  }
  if(A.numbers.size&&B.numbers.size&&!overlap(A.numbers,B.numbers).length)return null;
+ if(A.people.size&&B.people.size&&!overlap(A.people,B.people).length)return null;
+ if(A.explainer!==B.explainer&&(A.actions.size||B.actions.size))return null;
+ if(A.actions.has('aanval')!==B.actions.has('aanval') &&
+   (A.actions.has('onderhandeling')||B.actions.has('onderhandeling')))return null;
  // Two distinct geographical actors often indicate two distinct policy decisions.
  const commonCountries=overlap(A.countries,B.countries);
  if(A.countries.size&&B.countries.size&&!commonCountries.length)return null;
