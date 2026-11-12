@@ -79,7 +79,15 @@ const knownOutlets=[
 {match:['ft.com','financial times'],name:'Financial Times',ownership:'Nikkei Inc.',kind:'Commercial · privately held',url:'https://aboutus.ft.com/'},
 {match:['cnbc.com','cnbc'],name:'CNBC',ownership:'Corporate ownership varies by region; verify current entity',kind:'Commercial',url:'https://www.cnbc.com/about/'},
 ];
-function sourceInfo(a){let raw=(a.domain||a.source||'Unknown outlet').toLowerCase();let known=knownOutlets.find(o=>o.match.some(x=>raw===x||raw.includes(x)||x.includes(raw)&&raw.length>3));let fallback=(a.source||a.domain||'Unknown outlet').replace(/^www\./,'');return known||{name:fallback,ownership:'Ownership not reviewed in this prototype',kind:'Not classified',url:null}}
+function sourceInfo(a){
+ const profile=window.OpenLensPublisherProfiles?.lookup(a)||null;
+ if(profile)return {name:profile.name,ownership:profile.owner||'Eigendom niet geverifieerd',
+  kind:profile.type||'Uitgever',url:profile.ownershipSource||null,ownershipReviewed:!!profile.owner};
+ let raw=(a.domain||a.source||'Unknown outlet').toLowerCase();
+ let known=knownOutlets.find(o=>o.match.some(x=>raw===x||raw.includes(x)||x.includes(raw)&&raw.length>3));
+ let fallback=(a.source||a.domain||'Unknown outlet').replace(/^www\./,'');
+ return known||{name:fallback,ownership:'Eigendom nog niet beoordeeld',kind:'Niet geclassificeerd',url:null}
+}
 const commonStop=new Set('a an the to for and or in on at of with from about as by is are was were be has have had will would could should after before over under into amid more new latest live update updates today yesterday says say said report reporting reports how why what when where who than this that those these amid during against may near around across via not no it its their his her they she he we our us you your two three four one now all up out off EU US UK world global'.toLowerCase().split(' '));
 function tokens(s){return [...new Set(String(s||'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').match(/[\p{L}\p{N}]{3,}/gu)||[])].filter(x=>!commonStop.has(x)&&!/^\d{1,2}$/.test(x))}
 function similarity(a,b){const A=tokens(a),B=tokens(b);let overlap=A.filter(x=>B.includes(x)).length;return overlap/Math.max(2,Math.min(A.length,B.length))}
@@ -204,16 +212,19 @@ if(!articles.length&&requestedCountry==='all'&&requestedLanguage==='all'){
  }catch(err){errors.push('Historical archive unavailable')}
 }
 state.loading=false;if(state.topic!==requestedTopic||state.country!==requestedCountry||state.language!==requestedLanguage||state.period!==requestedPeriod){state.pendingRefresh=false;return refreshNews(true)}if(articles.length){setArticles(articles,fromArchive?'cached':'live',requestedTopic);if(!silent)toast(fromArchive?`Toont ${articles.length} gearchiveerde koppen (niet live).`:`Loaded ${articles.length} indexed articles. Matching is tentative.`)}else{if(state.allArticles.length){state.mode='cached';render();if(!silent)toast('Live news unavailable; showing a saved sample.')}else{state.stories=demoData();state.mode='demo';state.selected=state.stories[0].id;render();if(!silent)toast('Live feeds unavailable. Showing clearly labeled examples.')}console.warn('OpenLens feeds:',errors.join('; '))}if(state.pendingRefresh||state.topic!==requestedTopic||state.country!==requestedCountry||state.language!==requestedLanguage||state.period!==requestedPeriod){state.pendingRefresh=false;refreshNews(true)}}
+document.addEventListener('openlens:profiles-ready',()=>{
+ if(state.allArticles?.length){state.stories=clusterArticles(state.allArticles);render()}
+});
 window.addEventListener('keydown',e=>{let story=e.target.closest?.('[data-story]');if(story&&(e.key==='Enter'||e.key===' ')){e.preventDefault();story.click()}});
 init();
 </script>
 <script src="source-audit.js?v=20261110identityv2"></script>
-<script src="bias-extension.js?v=20261112europe7"></script>
+<script src="bias-extension.js?v=20261112ratings1"></script>
 <script src="article-preview.js?v=20261110sourcefix"></script>
 <script src="layout-redesign.js?v=20261110topics"></script>
 <script src="editorial-review-core.js?v=20261110review"></script>
 <script src="editorial-review.js?v=20261110review"></script>
-<script src="publisher-directory.js?v=20261112research1"></script>
+<script src="publisher-directory.js?v=20261112owners1"></script>
 <script src="product-shell.js?v=20261110pro"></script>
 <script src="editorial-home.js?v=20261112cluster2"></script>
 <script src="story-watch.js?v=20261112workspace"></script>
