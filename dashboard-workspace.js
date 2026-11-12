@@ -76,6 +76,7 @@ render=function(){previous();ensureHeader();updateHeader();injectDashboard()};
 document.addEventListener('click',e=>{
  if(e.target.closest('[data-ol-workspace-jump]')){
   e.preventDefault();e.stopImmediatePropagation();
+  if(document.querySelector('.ol-reader')&&typeof window.OpenLensCloseStory==='function')window.OpenLensCloseStory();
   if(state.view!=='dashboard'){state.view='dashboard';render()}
   document.getElementById('ol-workspace-tools')?.scrollIntoView({behavior:'smooth',block:'start'});
   return;
