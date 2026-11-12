@@ -20,7 +20,7 @@ async function loadEvidence(){
   if(!response.ok)throw Error('HTTP '+response.status);
   const data=await response.json();
   if(!Array.isArray(data.publishers)||!data.summary)throw Error('invalid archive summary');
-  ui.archive={...data,state:'ready'};
+  ui.archive={...data,state:'ready'};ui.error='';
   if(state.view==='publishers')markup();
  }catch(e){
   ui.archive={publishers:[],summary:null,state:'unavailable'};
