@@ -43,6 +43,7 @@
   </div>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="story-cluster-core.js?v=20261112cluster2"></script>
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
@@ -123,7 +124,33 @@ function newsDate(a){const d=Date.parse(a?.when||'');return Number.isFinite(d)?d
 function storyDate(s){return Math.max(-Infinity,...(s?.articles||[]).map(newsDate))}
 function newestFirst(a,b){const da=storyDate(a),db=storyDate(b);return (Number.isFinite(db)?db:0)-(Number.isFinite(da)?da:0)||String(a.title).localeCompare(String(b.title))}
 function normalizeArticles(arr){let seen=new Set();return arr.map((a,i)=>{let url=safeURL(a.url),title=(a.title||'').trim(),domain=(a.domain||a.source||'').toLowerCase(),when=a.when||a.published||a.seendate||null;let d=when&&/^\d{8}T\d{6}Z$/.test(when)?`${when.slice(0,4)}-${when.slice(4,6)}-${when.slice(6,8)}T${when.slice(9,11)}:${when.slice(11,13)}:${when.slice(13,15)}Z`:when;return {...a,id:a.id||url||'article-'+i,title,url,domain,when:d&&Number.isFinite(+new Date(d))?new Date(d).toISOString():null,kind:contentType(title),topic:storyTopic(title),region:classifyNewsRegion(title,a.discovery||'',a.region||null)}}).filter(a=>{let key=a.url||a.domain+'|'+a.title.toLowerCase();if(!a.title||seen.has(key))return false;seen.add(key);return true})}
-function clusterArticles(articles){let groups=[];let sorted=[...articles].sort((a,b)=>(Date.parse(b.when)||0)-(Date.parse(a.when)||0));for(let a of sorted){let best=-1,score=0;for(let i=0;i<groups.length;i++){let c=Math.max(...groups[i].articles.slice(0,4).map(x=>similarity(x.title,a.title)));if(c>score){score=c;best=i}}if(best>=0&&score>=.46&&tokens(a.title).length>=3){groups[best].articles.push(a)}else{groups.push({articles:[a]})}}return groups.map((g,i)=>{let ats=g.articles.sort((a,b)=>newsDate(b)-newsDate(a));let representative=[...ats].sort((a,b)=>b.title.length-a.title.length)[0];let names=new Set(ats.map(a=>sourceInfo(a).name));return {id:'live-'+simpleHash(ats.map(a=>a.id).sort().join('|')),title:representative.title,topic:storyTopic(representative.title),region:classifyNewsRegion(representative.title,'',null,state.feedTopic||state.topic),description:`${ats.length} matching indexed article${ats.length===1?'':'s'} from ${names.size} named outlet${names.size===1?'':'s'}. Headline similarity is not confirmation of identical events.`,articles:ats,match:ats.length>1?'Tentative headline match':'Single indexed article',demo:false,terms:[]}}).sort(newestFirst).slice(0,185)}
+function clusterArticles(articles){
+ const engine=window.OpenLensStoryClusters;
+ // If the clustering module cannot load, never revert to unsafe broad headline matching.
+ const buckets=engine?.group?.(articles,{limit:185})||
+  [...articles].sort((a,b)=>newsDate(b)-newsDate(a)).slice(0,185)
+  .map(a=>({articles:[a],confidence:'single',score:null,
+   detail:'Meertalige matchcontrole niet beschikbaar; artikelen worden niet automatisch samengevoegd.'}));
+ return buckets.map(g=>{
+  const ats=[...g.articles].sort((a,b)=>newsDate(b)-newsDate(a));
+  const headline=[...ats].sort((a,b)=>b.title.length-a.title.length)[0];
+  const names=new Set(ats.map(a=>sourceInfo(a).name));
+  const confidence=g.confidence||'single',score=g.score??null;
+  return {
+   id:'live-'+simpleHash(ats.map(a=>a.id).sort().join('|')),
+   title:headline.title,topic:storyTopic(headline.title),
+   region:classifyNewsRegion(headline.title,'',null,state.feedTopic||state.topic),
+   description:g.detail||'Deze koppen zijn nog niet inhoudelijk met elkaar vergeleken.',
+   articles:ats,match:confidence==='strong'?'Sterke kopovereenkomst · onbevestigd':
+    confidence==='tentative'?'Voorlopige kopovereenkomst · onbevestigd':'Los bericht · geen gekoppelde tweede kop',
+   clustering:{confidence,score,version:engine?.version||'unavailable',
+    method:g.method||'Geen automatische clustering beschikbaar',
+    detail:g.detail||'Artikel niet automatisch gekoppeld',verified:false,
+    publishers:names.size,articles:ats.length},
+   demo:false,terms:[]
+  };
+ }).sort(newestFirst).slice(0,185)
+}
 function simpleHash(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return Math.abs(h).toString(36)}
 function setArticles(articles,mode,feedTopic=state.topic){state.allArticles=normalizeArticles(articles);state.feedTopic=feedTopic;let links=state.allArticles.map(a=>a.url).filter(Boolean);let old=new Set(state.seenLinks);state.lastNewCount=old.size?links.filter(x=>!old.has(x)).length:null;state.seenLinks=[...new Set([...links,...state.seenLinks])].slice(0,2400);state.history.unshift({at:new Date().toISOString(),items:state.allArticles.length,newLinks:state.lastNewCount});state.history=state.history.slice(0,45);state.stories=clusterArticles(state.allArticles);state.mode=mode;state.lastFetched=new Date().toISOString();if(!state.stories.some(x=>x.id===state.selected))state.selected=state.stories[0]?.id||null;persist();render()}
 function init(){state.stories=demoData();state.selected=state.stories[0].id;let snap=memory.snapshot;if(snap?.articles?.length&&Number.isFinite(Date.parse(snap.when))){state.allArticles=normalizeArticles(snap.articles);state.stories=clusterArticles(state.allArticles);state.selected=state.stories[0]?.id;state.mode='cached';state.lastFetched=snap.when}document.addEventListener('click',onClick);document.addEventListener('change',onChange);document.addEventListener('input',onInput);document.addEventListener('submit',onSubmit);render();setTimeout(()=>refreshNews(true),500)}
