@@ -85,3 +85,50 @@ test('match confidence is always explicitly unverified and single reports stay s
  assert.equal(lone[0].confidence,'single');
  assert.equal(lone[0].score,null);
 });
+
+
+test('different traffic accidents in different streets are not one event',()=>{
+ const titles=[
+  'Ongeval met letsel op Lijnbaan in Den Haag',
+  'Ongeval met letsel op Nieuwe Parklaan in Den Haag',
+  'Ongeval met letsel op Juliana van Stolberglaan in Den Haag',
+  'Ongeval met letsel op Bezuidenhoutseweg in Den Haag'
+ ];
+ const items=titles.map((title,i)=>article(title,'Uitgever '+i));
+ assert.equal(engine.group(items).length,4);
+});
+
+test('Ukraine diplomatic talks are not combined with a separate attack',()=>{
+ assert.equal(together(
+  article('Russia attacks Ukraine hours after Abu Dhabi peace talks end'),
+  article('EU sends 2 senior officials to Ukraine talks in Abu Dhabi','POLITICO')
+ ),false);
+});
+
+test('an explainer and deployment of delegation are kept distinct',()=>{
+ assert.equal(together(
+  article("Who’s who for Europe at the Ukraine talks in Abu Dhabi"),
+  article("EU sends 2 senior officials to Ukraine talks in Abu Dhabi",'POLITICO')
+ ),false);
+});
+
+test('reports of the same EU delegation can still match',()=>{
+ assert.equal(together(
+  article('EU sends 2 senior officials to Ukraine talks in Abu Dhabi'),
+  article('EU to send joint team to Ukraine-Russia peace talks in Abu Dhabi','EURACTIV')
+ ),true);
+});
+
+test('different individuals speaking at the same COP conference remain separate',()=>{
+ assert.equal(together(
+  article('John Kerry speaks at the United Nations Climate Change Conference in Antalya Turkey'),
+  article('Greta Thunberg speaks at the United Nations Climate Change Conference in Antalya Turkey','Reuters')
+ ),false);
+});
+
+test('generic EU consumer coverage is not mistaken for a specific law proposal',()=>{
+ assert.equal(together(
+  article('Lowdown: European Commission proposes Digital Fairness Act to protect online consumers'),
+  article('European Commission to better protect consumers from online scams','EURACTIV')
+ ),false);
+});
