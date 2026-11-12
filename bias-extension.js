@@ -77,9 +77,9 @@
     if(audited&&!audited.politicallyAssessable)return {rating:'Other source',confidence:'Not applicable',source:null,reason:audited.type};
     if(institutionalSources[key])return {rating:'Other source',confidence:'Not applicable',source:null,reason:institutionalSources[key]};
     const eu=orientationLookup(name);
-    if(eu?.mapped)return {rating:eu.mapped,confidence:'Publisher orientation profile / different methodology',source:eu.source,
-      provider:'Eurotopics',originalOrientation:eu.orientation,
-      note:'Eurotopics editorial orientation, approximate crosswalk; not equivalent to an AllSides survey or an article assessment'};
+    if(eu)return {rating:'Unrated',confidence:'Eurotopics method is separate from AllSides',
+      source:eu.source,provider:'Eurotopics',originalOrientation:eu.orientation,
+      note:'Eurotopics editorial orientation is not mapped to an AllSides left-right score'};
     return {rating:'Unrated',confidence:'Not mapped to a left–right scale',source:eu?.source||null,
       provider:eu?.provider||null,originalOrientation:eu?.orientation||null};
   };
@@ -137,7 +137,7 @@
     }
     const s=current();if(!s)return;
     const articles=filteredArticles(s),values=counts(articles),ratedN=uniqueSources(articles).length-values.Unrated-values['Other source'];
-    const chart=document.createElement('section');chart.className='bias-panel';chart.setAttribute('aria-label','Political coverage distribution');chart.innerHTML=`<div class="bias-panel-head"><h3>Selected story · publisher leanings</h3><small>${uniqueSources(articles).length} distinct publisher${uniqueSources(articles).length===1?'':'s'} · ${ratedN} rated</small></div>${segments(values)}<div class="bias-legend">${legend(values)}</div><p class="bias-method">Shares reflect <strong>sampled publishers</strong> with supported orientation evidence, not total articles or public opinion. Explicit Eurotopics categories (Left-wing / Centre-left / Right-wing) are approximately grouped with AllSides labels; the methodologies are not directly equivalent. Liberal, Christian and liberal-conservative profiles are shown separately rather than forced into a left–right bin. Ratings: <a href="https://www.allsides.com/media-bias" target="_blank" rel="noopener">AllSides Media Bias Ratings™</a>, checked Nov 10, 2026 (CC BY-NC 4.0). Primarily U.S. political news; an outlet rating does not classify or verify any particular article. Unrated sources stay visible.</p>`;
+    const chart=document.createElement('section');chart.className='bias-panel';chart.setAttribute('aria-label','Political coverage distribution');chart.innerHTML=`<div class="bias-panel-head"><h3>Selected story · publisher leanings</h3><small>${uniqueSources(articles).length} distinct publisher${uniqueSources(articles).length===1?'':'s'} · ${ratedN} rated</small></div>${segments(values)}<div class="bias-legend">${legend(values)}</div><p class="bias-method">Shares reflect <strong>sampled publishers</strong> with supported orientation evidence, not total articles or public opinion. Eurotopics editorial orientation is shown separately and is never converted to an AllSides political rating. Liberal, Christian and liberal-conservative profiles are shown separately rather than forced into a left–right bin. Ratings: <a href="https://www.allsides.com/media-bias" target="_blank" rel="noopener">AllSides Media Bias Ratings™</a>, checked Nov 10, 2026 (CC BY-NC 4.0). Primarily U.S. political news; an outlet rating does not classify or verify any particular article. Unrated sources stay visible.</p>`;
 
     const all=state.allArticles?.length?state.allArticles:state.stories.flatMap(s=>s.articles);
     const overall=counts(all),allNames=uniqueSources(all);
