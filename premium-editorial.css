@@ -378,3 +378,28 @@ html[data-ol-theme=dark] .ol-dir-live-status p{color:#a6c9b7!important}
 html[data-ol-theme=dark] .ol-publisher-profile .ol-dir-name>strong{color:#efece4!important}
 html[data-ol-theme=dark] .ol-publisher-owner.muted{color:#9ba59d}
 @media(max-width:760px){.ol-dir-live-status{padding:15px 16px}.ol-publisher-profile .ol-dir-name>strong{font-size:21px}.ol-dir-live-status .ol-dir-button{width:100%}}
+
+
+/* Who owns the sample: editorial ownership map, not a bias graph. */
+.ol-owner-snapshot{background:var(--ol-white);border:1px solid var(--ol-rule);border-radius:4px;
+ padding:24px 27px;margin:16px 0 17px}
+.ol-owner-snapshot-head{display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap;
+ border-bottom:1px solid var(--ol-rule);padding-bottom:15px;margin-bottom:13px}
+.ol-owner-snapshot-head h2{font-family:var(--ol-serif);font-size:33px;line-height:1.1;font-weight:400;
+ color:var(--ol-ink);letter-spacing:-.022em;margin:7px 0 0}
+.ol-owner-snapshot-head>span{font:10px var(--ol-mono);color:var(--ol-soft)}
+.ol-owner-snapshot>p{font-size:11px;line-height:1.65;color:var(--ol-soft)}
+.ol-owner-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px 26px;margin:20px 0}
+.ol-owner-row{min-width:0}
+.ol-owner-row-title{display:flex;justify-content:space-between;gap:8px;align-items:baseline;margin-bottom:8px}
+.ol-owner-row-title strong{font-size:11px;font-weight:800;color:var(--ol-ink);overflow-wrap:anywhere}
+.ol-owner-row-title span{font:9px var(--ol-mono);color:var(--ol-soft);white-space:nowrap}
+.ol-owner-track{height:7px;background:#eae8df;border-radius:2px;overflow:hidden}
+.ol-owner-track>span{display:block;height:100%;background:#4d786a;border-radius:2px}
+.ol-owner-track>span.unknown{background:#a9aaa0}
+.ol-owner-snapshot>small{font-size:10px;line-height:1.7;color:var(--ol-soft)}
+html[data-ol-theme=dark] .ol-owner-snapshot{background:#1b2929!important;border-color:#354541!important}
+html[data-ol-theme=dark] .ol-owner-track{background:#354541}
+html[data-ol-theme=dark] .ol-owner-track>span{background:#6c9c82}
+html[data-ol-theme=dark] .ol-owner-track>span.unknown{background:#808e87}
+@media(max-width:760px){.ol-owner-snapshot{padding:18px 17px}.ol-owner-list{grid-template-columns:1fr;gap:14px}.ol-owner-snapshot-head h2{font-size:29px}}
