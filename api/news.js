@@ -105,8 +105,10 @@ export default async function handler(req,res) {
  const topic=Object.prototype.hasOwnProperty.call(topics,p.get('topic'))?p.get('topic'):'all';
  const country=p.get('country')||'all',language=p.get('language')||'all';
  const period=['1','7','30'].includes(p.get('period'))?p.get('period'):'7';
- const internationalTopics=new Set(['world','gaza','ukraine','middle-east','geopolitics']);
- const preferDutch=(country==='all'&&language==='all'&&!internationalTopics.has(topic));
+ const dutchTopics=new Set(['netherlands','dutch-politics','local-government','housing','public-finances','labor','healthcare-nl','education','agriculture','climate-energy','mobility','rule-of-law','social-policy','belgium-benelux']);
+ const euTopics=new Set(['europe','eu-policy','eu-institutions','digital-policy']);
+ const preferDutch=(country==='all'&&language==='all'&&dutchTopics.has(topic));
+ const internationalTopics=new Set([...euTopics,'world','politics','geopolitics','migration','gaza','ukraine','middle-east','security-defense','business','technology','climate','health']);
  const edition=(countryLang[country]||(preferDutch?countryLang.Netherlands:['US','en-US','en'])).slice();
  if(langCode[language]){edition[2]=langCode[language];edition[1]=edition[2]==='en'?'en-'+edition[0]:edition[2]}
  const [countryCode,hl,lang]=edition;
@@ -117,7 +119,7 @@ export default async function handler(req,res) {
  const baseQuery=topics[topic]+' when:'+period+'d';
  const searches=[{query:baseQuery,max:90,discovery:'general',locale:edition}];
  const dutchDiscovery=(country==='all'||country==='Netherlands')&&(language==='all'||language==='Dutch')&&
-  !internationalTopics.has(topic);
+  dutchTopics.has(topic);
  const europeDiscovery=(country==='all'||country==='Netherlands'||country==='United Kingdom')&&
   (language==='all'||language==='English');
  const siteGroup=(domains)=>'('+domains.map(d=>'site:'+d).join(' OR ')+')';
@@ -133,7 +135,7 @@ export default async function handler(req,res) {
   searches.push({query:topics[topic]+' '+siteGroup(euro)+' when:'+period+'d',max:35,discovery:'european-news-publishers',locale:['GB','en-GB','en']});
  }
  const publicDocuments=(country==='all'||country==='Netherlands')&&(language==='all'||language==='Dutch')&&
-  !internationalTopics.has(topic);
+  dutchTopics.has(topic);
  if(publicDocuments){
   const official=['rijksoverheid.nl','tweedekamer.nl','cbs.nl','rekenkamer.nl','ec.europa.eu','europarl.europa.eu','consilium.europa.eu'];
   searches.push({query:topics[topic]+' '+siteGroup(official)+' when:'+period+'d',max:24,discovery:'official-institutional-sources',locale:countryLang.Netherlands});
