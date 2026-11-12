@@ -9,7 +9,7 @@ const STOP=new Set((
  +' der die das den dem ein eine und von für mit bei auf im zum zur des ist sind wird werden als auch nach über gegen unter aus am nicht neue neuen weitere'
  +' le la les du des de dans et en pour avec sur est sont aux au une un plus apres selon par que cette ces il elle'
  +' of or nor and oraz un et und de en'
- +' nieuws news breaking bericht berichten berichtgeving politie politiek politics political dutch dutchnews europa europe european europees europeese eu'
+ +' nieuw nieuwe nieuwste nieuws news breaking bericht berichten berichtgeving politie politiek politics political dutch dutchnews europa europe european europees europeese eu'
  +' regering government kabinet ministers minister lawmakers officials leaders president parlement parliament politician politicus'
  +' update gisteren vandaag today tomorrow yesterday nederlandse euroland'
 ).split(/\s+/));
@@ -33,6 +33,12 @@ const MAP=new Map(Object.entries({
  'begroting':'begroting','budget':'begroting','budgets':'begroting','haushalt':'begroting',
  'tarieven':'tarief','tariff':'tarief','tariffs':'tarief','handelstarieven':'tarief','zolle':'tarief','zoll':'tarief',
  'sancties':'sanctie','sanction':'sanctie','sanctions':'sanctie','sanktionen':'sanctie',
+ 'regels':'regel','rules':'regel','rule':'regel','regelgeving':'regel','regulations':'regel','regulation':'regel',
+ 'presenteert':'presenteren','presents':'presenteren','presented':'presenteren','introduces':'presenteren',
+ 'bespreekt':'bespreken','discusses':'bespreken','discussed':'bespreken',
+ 'defensieplannen':'defensie','defenceplans':'defensie','defenseplans':'defensie',
+ 'plannen':'plan','plans':'plan','plan':'plan',
+ 'stemt':'stemming','stemmen':'stemming',
  'staken':'staking','staking':'staking','strikes':'staking','strike':'staking','greve':'staking','streik':'staking',
  'belasting':'belasting','belastingen':'belasting','taxes':'belasting','tax':'belasting','steuern':'belasting','impots':'belasting',
  'klimaat':'klimaat','climate':'klimaat','klima':'klimaat','climat':'klimaat',
@@ -57,7 +63,7 @@ const MAP=new Map(Object.entries({
 }));
 const PHRASES=[
  [/tweede kamer|dutch lower house|dutch house of representatives|niederlandische zweite kammer/g,' tweedekamer '],
- [/european commission|europese commissie|europaische kommission|commission europeenne/g,' eucommissie '],
+ [/european commission|eu commission|europese commissie|europaische kommission|commission europeenne/g,' eucommissie '],
  [/european parliament|europees parlement|europaisches parlament|parlement europeen/g,' euparlement '],
  [/european union|europese unie|europaische union|union europeenne/g,' euunie '],
  [/prime minister|minister president|minister president|premier ministre|bundeskanzler/g,' premier '],
@@ -83,6 +89,10 @@ function features(article){
  }
  const countries=new Set([...terms].filter(x=>COUNTRIES.has(x)));
  const actions=new Set([...terms].filter(x=>ACTIONS.has(x)));
+ // Capture multiword decisions without deleting context words or numeric dates.
+ if(/\bkeurt\b.*\bgoed\b|\bkeurde\b.*\bgoed\b|\bneemt\b.*\baan\b|\bgoedgekeurd\b/.test(raw))actions.add('goedgekeurd');
+ if(/\bwijst\b.*\baf\b|\bverwerpt\b|\bverworpen\b|\bafgewezen\b/.test(raw))actions.add('afgewezen');
+
  const names=new Set([...terms].filter(x=>STRONG_ENTITY.has(x)));
  const numbers=new Set(wordList.filter(w=>/^(?:19|20)\d\d$/.test(w)));
  const when=Date.parse(article.when||article.publishedAt||article.indexedAt||'');
