@@ -26,6 +26,16 @@ De precieze veilige stappen staan in [docs/NEWS_DATABASE_SETUP.md](docs/NEWS_DAT
 
 Koppen worden nu conservatief gegroepeerd via meertalige termen, bekende namen, geografische aanduidingen, afwijkende besluiten en tijdvensters. Verschillende ongevallen op verschillende straten, tegenovergestelde parlementaire besluiten en verschillende conferentiesprekers blijven gescheiden. Elke nieuwskaart en elk verhaaldossier toont of een koppeling sterk, voorlopig of niet gemaakt is — **nooit als bewezen dezelfde gebeurtenis**. Er zijn 16 tests en er is een controle op gearchiveerde NL/EU/Wereld-koppen uitgevoerd. Zie [docs/STORY_CLUSTERING.md](docs/STORY_CLUSTERING.md).
 
+## Stap 3: Publisher Intelligence met eigendomsbronnen
+
+- **38 nagekeken Nederlandse en Europese uitgeversprofielen** in `publisher-profiles.json` met genormaliseerde merkaliassen, land, taal, type, naam van de mediagroep, verificatiedatum en eigendomsbron (waar bekend).
+- De uitgeverspagina gebruikt nu het **echte Neon-archief** via `GET /api/publisher-stats` in plaats van de ongevulde legacy-`publisher-observations.json`.
+- Een bronvermelding toont rechtstreeks de oorspronkelijke eigendomsbron. Andere uitgevers blijven expliciet onbeoordeeld.
+- **Eurotopics-oriëntaties worden niet meer omgerekend naar AllSides-bias.** Politieke distributiebalken tonen bij onvoldoende steekproefgrootte aantallen, geen misleidende percentages.
+- Eigendom, politieke oriëntatie, feitelijke correctheid, aanwezigheid in zoekresultaten en bronsoort blijven **verschillende begrippen**.
+
+Gedetailleerde methodologie, bronverwijzingen en beperkingen: [docs/PUBLISHER_INTELLIGENCE.md](docs/PUBLISHER_INTELLIGENCE.md).
+
 ## Features
 
 - Responsive story dashboard for phone and desktop
