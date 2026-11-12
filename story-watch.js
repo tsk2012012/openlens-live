@@ -51,7 +51,7 @@ function watchButton(storyId){
  b.dataset.olWatchStory=storyId;
  const s=state.stories.find(a=>a.id===storyId);
  const already=s&&watchItems.some(w=>w.title.toLocaleLowerCase()===s.title.toLocaleLowerCase());
- b.textContent=already?'Watching ✓':'+ Watch story';
+ b.textContent=already?'Volg je al ✓':'Volg updates';
  b.classList.toggle('active',Boolean(already));return b;
 }
 function enhanceStories(){
@@ -98,8 +98,8 @@ function watchCard(w){
 function watchPage(){
  const active=watchItems.filter(w=>w.newCount>0).length,newLinks=watchItems.reduce((sum,w)=>sum+(w.newCount||0),0);
  const content=document.getElementById('content');if(!content)return;
- content.innerHTML='<div class="ol-watch-page"><header class="ol-watch-hero"><div><span class="ol-watch-eyebrow">TRACK WHAT CHANGES</span><h1>Story Watch</h1>'+
- '<p>Keep track of public-affairs stories and manually check Dutch and European feeds for newly discovered links. No automated alerts or article-level fact-checking.</p></div>'+
+ content.innerHTML='<div class="ol-watch-page"><header class="ol-watch-hero"><div><span class="ol-watch-eyebrow">TRACK WHAT CHANGES</span><h1>Gevolgde onderwerpen</h1>'+
+ '<p>Volg belangrijke verhalen en controleer op verzoek welke nieuwsbronnen recent nieuwe artikelen hebben gepubliceerd. Er zijn geen automatische meldingen of factchecks.</p></div>'+
  '<div class="ol-watch-buttons"><button class="ol-watch-btn primary" type="button" data-ol-check-all'+(checkingAll?' disabled':'')+'>'+(checkingAll?'Checking…':'↻ Check '+(watchItems.length>8?'first 8':'all')+' watches')+'</button>'+
  '<button class="ol-watch-btn" type="button" data-ol-export>Export watchlist</button></div></header>'+
  '<div class="ol-watch-stat-row"><div class="ol-watch-stat"><strong>'+watchItems.length+'</strong><span>Topics followed</span></div>'+
