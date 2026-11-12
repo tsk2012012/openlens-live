@@ -78,6 +78,17 @@ const HOURS=96;
 function fold(raw){return String(raw||'').toLowerCase().normalize('NFKD')
  .replace(/[\u0300-\u036f]/g,'').replace(/[’‘]/g,"'").replace(/[^a-z0-9% ]+/g,' ')
  .replace(/\s+/g,' ').trim();}
+function streetsOf(text){
+ const all=new Set();
+ const plain=fold(text);
+ // Named roads are important negative evidence for otherwise identical local-incident headlines.
+ const re=/\b((?:[a-z]{3,}\s+){0,3}[a-z]{3,}(?:straat|laan|weg|plein|baan|kade|dijk|singel))\b/g;
+ for(const match of plain.matchAll(re)){
+  const road=match[1].trim().replace(/\s+/g,' ');
+  if(road.length>=5)all.add(road);
+ }
+ return all;
+}
 function features(article){
  let raw=fold(article.title||article||'');
  for(const [pattern,value] of PHRASES)raw=raw.replace(pattern,value);
@@ -94,15 +105,21 @@ function features(article){
  if(/\bwijst\b.*\baf\b|\bverwerpt\b|\bverworpen\b|\bafgewezen\b/.test(raw))actions.add('afgewezen');
 
  const names=new Set([...terms].filter(x=>STRONG_ENTITY.has(x)));
+ const streets=streetsOf(article.title||article||'');
+ const incident=/\b(ongeval|aanrijding|brand|explosie|steekpartij|schietpartij|botsing|crash|collision|traffic accident|collision|explosion)\b/.test(raw);
  const numbers=new Set(wordList.filter(w=>/^(?:19|20)\d\d$/.test(w)));
  const when=Date.parse(article.when||article.publishedAt||article.indexedAt||'');
- return {terms,countries,actions,names,numbers,when:Number.isFinite(when)?when:null,
+ return {terms,countries,actions,names,numbers,streets,incident,when:Number.isFinite(when)?when:null,
   publisher:String(article.source||article.domain||'').toLowerCase().trim()};
 }
 function overlap(a,b){return [...a].filter(x=>b.has(x))}
 function evaluate(A,B){
  const gaps=[];
  if(A.when!==null&&B.when!==null&&Math.abs(A.when-B.when)>HOURS*3600000)return null;
+ if(A.incident&&B.incident){
+  if(A.when!==null&&B.when!==null&&Math.abs(A.when-B.when)>24*3600000)return null;
+  if((A.streets.size||B.streets.size)&&!overlap(A.streets,B.streets).length)return null;
+ }
  if(A.numbers.size&&B.numbers.size&&!overlap(A.numbers,B.numbers).length)return null;
  // Two distinct geographical actors often indicate two distinct policy decisions.
  const commonCountries=overlap(A.countries,B.countries);
