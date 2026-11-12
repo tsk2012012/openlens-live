@@ -16,6 +16,16 @@ const articleDate=s=>{
 const regionLabel=s=>({nl:'Nederland',eu:'EU',world:'Wereld'})[s.region]||'Regio onbekend';
 const sources=s=>[...new Set(filteredArticles(s).map(a=>sourceInfo(a).name))];
 const plural=(n,singular,other)=>n+' '+(n===1?singular:other);
+function clusterLabel(story){
+ if(story.demo)return '';
+ const info=story.clustering;
+ if(!info)return '<span class="ol-cluster-label neutral">Geen matchcontrole beschikbaar</span>';
+ const label=info.confidence==='strong'?'Sterke kopovereenkomst':
+  info.confidence==='tentative'?'Voorlopige kopovereenkomst':'Afzonderlijk bericht';
+ const note='Automatische titel-, entiteit- en tijdcontrole. Geen bewijs dat de artikelen exact dezelfde gebeurtenis beschrijven.';
+ return '<span class="ol-cluster-label '+ESC(info.confidence)+'" title="'+ESC(note)+'">'+ESC(label)+'</span>';
+}
+
 function card(s,i){
  const articles=filteredArticles(s),outlets=sources(s),featured=i===0;
  const title=ESC(s.title),id=ESC(s.id),kind=ESC(s.topic||'News');
@@ -26,7 +36,8 @@ function card(s,i){
  '<button type="button" class="ol-feed-title" data-ol-open-story="'+id+'" aria-label="Compare coverage: '+title+'">'+title+'</button>'+
  '<p class="ol-feed-description">'+(s.demo?'Illustrative headline group. Refresh to see live publisher links.':
  'Artikelen zijn voorlopig gegroepeerd op vergelijkbare titels. Open de vergelijking om de originele bronnen te bekijken.')+'</p>'+
- '<div class="ol-feed-source-list"><strong>Uitgevers:</strong> '+(unique||'Not yet identified')+(outlets.length>3?' · +'+(outlets.length-3)+' more':'')+'</div>'+
+ '<div class="ol-feed-source-list"><strong>Uitgevers:</strong> '+(unique||'Nog niet geïdentificeerd')+(outlets.length>3?' · +'+(outlets.length-3)+' andere':'')+'</div>'+
+ '<div class="ol-feed-cluster">'+clusterLabel(s)+'<small>Automatisch · niet inhoudelijk geverifieerd</small></div>'+ 
  '<div class="ol-feed-line"></div><div class="ol-feed-footer">'+
  '<span class="ol-feed-meta">'+plural(outlets.length,'publisher','publishers')+' · '+plural(articles.length,'article','articles')+'</span>'+
  '<div class="ol-feed-actions"><button type="button" class="ol-feed-save'+(getSaved(s)?' saved':'')+'" data-action="save" data-id="'+id+'" aria-label="'+(getSaved(s)?'Remove saved story':'Save story')+'">'+(getSaved(s)?'Bewaard ✓':'Bewaar')+'</button>'+
@@ -62,10 +73,11 @@ function report(s){
  '<header class="ol-reader-hero"><span class="ol-newsroom-kicker">'+ESC(s.topic||'News')+' · HEADLINE COMPARISON</span>'+
  '<h1 id="ol-reader-heading" tabindex="-1">'+ESC(s.title)+'</h1>'+
  '<p class="ol-reader-lead">'+subtitle+'</p>'+
+ '<div class="ol-reader-cluster"><div><strong>Artikelkoppeling</strong>'+clusterLabel(s)+'</div><p>'+ESC(s.clustering?.detail||'Dit dossier is gebaseerd op beschikbare artikelkoppen. Vergelijk originele artikelen voordat je conclusies trekt.')+'</p><small>Methodiek: koptermen, meertalige woordenlijst, entiteiten, jaartallen en maximaal vier dagen verschil tussen beschikbare datums. Niet gecontroleerd op volledige artikelinhoud.</small></div>'+
  '<div class="ol-reader-actions"><button type="button" data-action="save" data-id="'+ESC(s.id)+'" class="ol-feed-save'+(getSaved(s)?' saved':'')+'">'+(getSaved(s)?'Bewaard ✓':'☆ Bewaar artikel')+'</button>'+
  '<button type="button" class="ol-feed-cta" data-ol-reader-jump>Vergelijk bronnen ↓</button></div>'+
  '<div class="ol-reader-metadata"><span>'+plural(outlets.length,'named publisher','named publishers')+'</span><span>'+plural(articles.length,'available article','available articles')+'</span>'+
- '<span>Latest indexed / feed date: '+ESC(articleDate(s))+'</span><span>'+ESC(s.demo?'Demonstration data':'Tentative headline match')+'</span></div></header>'+
+ '<span>Recentste beschikbare datum: '+ESC(articleDate(s))+'</span><span>'+ESC(s.demo?'Demonstratie':'Ongeverifieerde kopvergelijking')+'</span></div></header>'+
  '<div class="ol-reader-section-title"><h2>Reporting at a glance</h2><p>Original publisher headlines, not an AI synthesis</p></div>'+
  '<div class="ol-reader-snapshot"><section class="ol-reader-headlines"><h3>What sources are publishing</h3>'+
  (head||'<p>No original article links are available in this example.</p>')+'</section>'+
