@@ -29,8 +29,8 @@ function card(s,i){
  '<div class="ol-feed-source-list"><strong>Publishers:</strong> '+(unique||'Not yet identified')+(outlets.length>3?' · +'+(outlets.length-3)+' more':'')+'</div>'+
  '<div class="ol-feed-line"></div><div class="ol-feed-footer">'+
  '<span class="ol-feed-meta">'+plural(outlets.length,'publisher','publishers')+' · '+plural(articles.length,'article','articles')+'</span>'+
- '<div class="ol-feed-actions"><button type="button" class="ol-feed-save'+(getSaved(s)?' saved':'')+'" data-action="save" data-id="'+id+'" aria-label="'+(getSaved(s)?'Remove saved story':'Save story')+'">'+(getSaved(s)?'Saved ✓':'Save')+'</button>'+
- '<button type="button" class="ol-feed-cta" data-ol-open-story="'+id+'">Compare reporting ↗</button></div></div></article>';
+ '<div class="ol-feed-actions"><button type="button" class="ol-feed-save'+(getSaved(s)?' saved':'')+'" data-action="save" data-id="'+id+'" aria-label="'+(getSaved(s)?'Remove saved story':'Save story')+'">'+(getSaved(s)?'Bewaard ✓':'Bewaar')+'</button>'+
+ '<button type="button" class="ol-feed-cta" data-ol-open-story="'+id+'">Vergelijk bronnen ↗</button></div></div></article>';
 }
 function browse(){
  const stories=filterStories(),count=sourcesCount(stories);
@@ -62,8 +62,8 @@ function report(s){
  '<header class="ol-reader-hero"><span class="ol-newsroom-kicker">'+ESC(s.topic||'News')+' · HEADLINE COMPARISON</span>'+
  '<h1 id="ol-reader-heading" tabindex="-1">'+ESC(s.title)+'</h1>'+
  '<p class="ol-reader-lead">'+subtitle+'</p>'+
- '<div class="ol-reader-actions"><button type="button" data-action="save" data-id="'+ESC(s.id)+'" class="ol-feed-save'+(getSaved(s)?' saved':'')+'">'+(getSaved(s)?'Saved ✓':'☆ Save this story')+'</button>'+
- '<button type="button" class="ol-feed-cta" data-ol-reader-jump>See publisher comparison ↓</button></div>'+
+ '<div class="ol-reader-actions"><button type="button" data-action="save" data-id="'+ESC(s.id)+'" class="ol-feed-save'+(getSaved(s)?' saved':'')+'">'+(getSaved(s)?'Bewaard ✓':'☆ Bewaar artikel')+'</button>'+
+ '<button type="button" class="ol-feed-cta" data-ol-reader-jump>Vergelijk bronnen ↓</button></div>'+
  '<div class="ol-reader-metadata"><span>'+plural(outlets.length,'named publisher','named publishers')+'</span><span>'+plural(articles.length,'available article','available articles')+'</span>'+
  '<span>Latest indexed / feed date: '+ESC(articleDate(s))+'</span><span>'+ESC(s.demo?'Demonstration data':'Tentative headline match')+'</span></div></header>'+
  '<div class="ol-reader-section-title"><h2>Reporting at a glance</h2><p>Original publisher headlines, not an AI synthesis</p></div>'+
