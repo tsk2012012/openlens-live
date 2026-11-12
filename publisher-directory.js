@@ -3,7 +3,7 @@
 'use strict';
 if(typeof render!=='function'||typeof state==='undefined')return;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const ui={query:'',filter:'all',region:'all',expanded:false,groups:{},discovered:[],updated:null,loading:false,started:false,error:''};
+const ui={query:'',filter:'all',region:'all',expanded:false,groups:{},discovered:[],updated:null,loading:false,started:false,error:'',evidence:{articles:[],generatedAt:null,successfulQueries:0,totalQueries:0}};
 const safeLink=raw=>{try{const u=new URL(raw);return u.protocol==='https:'&&/(^|\.)(allsides\.com|eurotopics\.net)$/i.test(u.hostname)?u.href:null}catch{return null}};
 
 const regionNames={nl:'Nederland',eu:'Europa / EU',world:'Wereld',other:'Overige'};
@@ -12,6 +12,27 @@ const cacheKey='openlens.publisher.discovery.v2';
 try{const c=JSON.parse(localStorage.getItem(cacheKey)||'null');if(c){ui.discovered=Array.isArray(c.names)?c.names:[];ui.updated=c.updated||null}}catch{}
 async function loadCatalog(){
  try{const r=await fetch('/publisher-catalog.json');if(!r.ok)throw Error('catalog unavailable');const d=await r.json();ui.groups=d.groups||{};if(state.view==='publishers')markup()}catch(e){ui.error='Catalogusbestand niet beschikbaar';if(state.view==='publishers')markup()}
+}
+async function loadEvidence(){
+ try{const r=await fetch('/publisher-observations.json',{cache:'no-store'});if(!r.ok)throw Error('unavailable');
+  const d=await r.json();if(!Array.isArray(d.articles))throw Error('invalid archive');
+  ui.evidence=d;if(state.view==='publishers')markup()
+ }catch(e){ui.error='Historische onderzoeksdatabase is nog niet beschikbaar';if(state.view==='publishers')markup()}
+}
+function evidenceStats(){
+ const counts=new Map();
+ for(const a of ui.evidence.articles||[]){const k=normal(a.publisher);if(k)counts.set(k,(counts.get(k)||0)+1)}
+ return counts;
+}
+function surveyBar(list){
+ const observed=list.filter(p=>p.live),counts={left:0,center:0,right:0,unknown:0};
+ for(const p of observed){const group=tone(p);counts[group==='other'?'unknown':group]++}
+ const total=observed.length||0;
+ const portions=Object.entries(counts).map(([k,n])=>'<span title="'+k+': '+n+' uitgevers" style="width:'+(total?100*n/total:0)+'%;height:100%;background:'+({left:'#3c70d6',center:'#6b9b83',right:'#d45e5c',unknown:'#95a2a5'}[k])+'"></span>').join('');
+ return '<section style="border:1px solid var(--line,#dce5df);padding:16px;border-radius:12px;margin:14px 0"><strong>Politieke bronverdeling in waargenomen uitgevers</strong>'+
+ '<div style="display:flex;overflow:hidden;height:20px;border-radius:7px;margin:10px 0;background:#dfe6e5">'+portions+'</div>'+
+ '<div style="display:flex;flex-wrap:wrap;gap:12px;font-size:12px">'+Object.entries(counts).map(([k,n])=>'<span>'+({left:'Links',center:'Midden',right:'Rechts',unknown:'Onvoldoende / niet vergelijkbaar'}[k])+': <strong>'+n+'</strong>'+(total?' ('+Math.round(n/total*100)+'%)':'')+'</span>').join('')+'</div>'+
+ '<p style="font-size:11px;margin:10px 0 0;color:var(--muted,#667)">De percentages tellen unieke waargenomen uitgevers, niet alle artikelen, kiezers of de politieke inhoud van een specifieke reportage. Onbeoordeeld blijft zichtbaar.</p></section>'
 }
 async function scan(force){
  if(ui.loading||(!force&&ui.updated&&Date.now()-Date.parse(ui.updated)<1800000))return;
@@ -40,6 +61,7 @@ function publishers(){
  for(const region of ['nl','eu','world'])for(const name of ui.groups[region]||[])add(name,region);
  for(const a of state.allArticles||[])add(typeof sourceInfo==='function'?sourceInfo(a)?.name:a.source,'other',true,a.when);
  for(const a of ui.discovered)add(a.name,a.region||'other',true,a.when);
+ for(const a of ui.evidence.articles||[])add(a.publisher,a.region||'other',true,a.date);
  return [...names.values()].sort((a,b)=>a.name.localeCompare(b.name,'nl',{sensitivity:'base'})).map(entry=>{const name=entry.name;
   const meta=window.OpenLensSourceAudit?.lookup(name)||null;
   const external=window.OpenLensPublisherRatingLookup?.(name)||null;
@@ -71,9 +93,10 @@ function markup(){
  const list=publishers(),rated=list.filter(x=>x.kind==='rated').length,
   orgs=list.filter(x=>x.kind==='institution').length,unrated=list.length-rated-orgs;
  const status=m=>m.kind==='institution'?'Instelling / geen nieuwsuitgever':m.rating||m.orientation||'Geen controleerbare politieke beoordeling';
+ const observed=evidenceStats();
  const rows=list.map(m=>
   '<article class="ol-dir-row" data-ol-dir-region="'+m.region+'" data-ol-dir-live="'+m.live+'" data-ol-dir-kind="'+m.kind+'" data-ol-dir-name="'+esc((m.name+' '+m.type).toLowerCase())+'">'+
-  '<div class="ol-dir-name"><strong>'+esc(m.name)+'</strong><span>'+esc(regionNames[m.region]||'Overige')+' · '+esc(m.type)+(m.live?' · Aangetroffen in nieuwsfeed':' · Catalogus')+'</span></div>'+
+  '<div class="ol-dir-name"><strong>'+esc(m.name)+'</strong><span>'+esc(regionNames[m.region]||'Overige')+' · '+esc(m.type)+(m.live?' · Aangetroffen in nieuwsfeed':' · Catalogus')+' · Historische steekproef: '+(observed.get(normal(m.name))||0)+' artikelen</span></div>'+
   '<div class="ol-dir-meta"><span class="ol-dir-badge '+m.kind+' ol-dir-'+tone(m)+'">'+esc(status(m))+'</span>'+
   (m.ratingLink?'<a href="'+esc(m.ratingLink)+'" target="_blank" rel="noopener noreferrer">AllSides / bronprofiel ↗</a>':'')+(m.orientationLink?'<a href="'+esc(m.orientationLink)+'" target="_blank" rel="noopener noreferrer">Eurotopics ↗</a>':'')+(!m.link?'<small>Geen beoordeling beschikbaar</small>':'')+
   '</div></article>').join('');
@@ -86,6 +109,10 @@ function markup(){
  '</div><div class="ol-dir-explain"><strong>What these labels mean:</strong> Newsroom political ratings come from cited external assessments, not OpenLens guesses. Government bodies, research groups and other institutions are grouped by source type. Unrated does not mean Center. A Eurotopics editorial-orientation profile (e.g. Liberal or Christian) need not map to Left–Right. AllSides and Eurotopics use different methodologies. This directory represents the current feed, not the entire news ecosystem.</div>'+
  '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0"><button class="ol-dir-button" type="button" id="ol-dir-refresh" '+(ui.loading?'disabled':'')+'>↻ '+(ui.loading?'Nieuwsfeeds worden opgehaald…':'Ververs uitgevers uit NL, EU en Wereld')+'</button><small>'+esc(ui.error||('Laatste scan: '+(ui.updated?new Date(ui.updated).toLocaleString('nl-NL'):'nog niet uitgevoerd')))+'</small></div>'+
  '<p class="ol-dir-foot">Deze uitgebreide catalogus bevat ook namen die nog niet zijn gevonden in de live feeds. De scan draait bij openen en op verzoek, niet voortdurend op de achtergrond. AllSides en Eurotopics worden niet live gesynchroniseerd.</p>'+
+ '<div class="ol-dir-explain"><strong>Meetinstrument:</strong> '+(ui.evidence.generatedAt?'Laatste historische dataset '+esc(new Date(ui.evidence.generatedAt).toLocaleString('nl-NL')):'Nog geen automatische meting voltooid')+
+ ' · '+(ui.evidence.articles?.length||0)+' bewaarde artikelverwijzingen · '+(ui.evidence.successfulQueries||0)+'/'+(ui.evidence.totalQueries||13)+' geslaagde feedqueries. '+
+ 'De geplande workflow probeert iedere zes uur nieuwe openbare headlineverwijzingen te verzamelen. Dit is geen volledige-tekstonderzoek en kan geen objectieve politieke overtuiging van een uitgever berekenen.</div>'+
+ surveyBar(list)+
  '<div class="ol-dir-legend" aria-label="Kleurlegenda"><span><i class="left"></i>Links</span><span><i class="center"></i>Midden</span><span><i class="right"></i>Rechts</span><span><i class="other"></i>Niet op links-rechtsschaal</span></div>'+ 
  '<section class="ol-dir-panel"><div class="ol-dir-toolbar"><div><h2>Browse sources</h2><p>Search a publisher or explore its source category.</p></div>'+
  '<label>Search publishers<input id="ol-dir-search" placeholder="Search by name or source type" value="'+esc(ui.query)+'" autocomplete="off"></label></div>'+
@@ -110,13 +137,13 @@ function filter(){
  if(btn){btn.hidden=!!ui.query||matches.length<=65;btn.textContent=ui.expanded?'Show fewer sources':'Show all '+matches.length+' sources'}
  for(const button of document.querySelectorAll('[data-ol-dir-filter]'))button.setAttribute('aria-pressed',String(button.dataset.olDirFilter===ui.filter));
 }
-const prior=render;render=function(){prior();if(state.view==='publishers'){markup();if(!ui.started){ui.started=true;loadCatalog();scan(false)}}};
+const prior=render;render=function(){prior();if(state.view==='publishers'){markup();if(!ui.started){ui.started=true;loadCatalog();loadEvidence();scan(false)}}};
 document.addEventListener('input',e=>{if(e.target?.id==='ol-dir-search'){ui.query=e.target.value.slice(0,180);filter()}});
 document.addEventListener('click',e=>{
  const btn=e.target.closest?.('[data-ol-dir-filter]');
  if(btn){ui.filter=btn.dataset.olDirFilter;ui.expanded=false;filter()}
  if(e.target.closest?.('#ol-dir-more')){ui.expanded=!ui.expanded;filter()}
- if(e.target.closest?.('#ol-dir-refresh'))scan(true)
+ if(e.target.closest?.('#ol-dir-refresh')){loadEvidence();scan(true)}
 });
 document.addEventListener('change',e=>{if(e.target?.id==='ol-dir-region'){ui.region=e.target.value;ui.expanded=false;filter()}});
 })();
